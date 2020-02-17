@@ -49,7 +49,7 @@ namespace EquipmentParamMonitor
             private static ILog exceptionLog;
             static Log()
             {
-                FileInfo configFile = new FileInfo("Configs\\log4net.config");
+                FileInfo configFile = new FileInfo(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Configs", "log4net.config"));
                 log4net.Config.XmlConfigurator.Configure(configFile);
             }
             /// <summary>

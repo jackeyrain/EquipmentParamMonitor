@@ -50,7 +50,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -76,17 +78,23 @@
     <Compile Include="Model\EQUIPMENT_VARIABLE.cs" />
     <Compile Include="Model\EQUIPPARAMLOG.cs" />
     <Compile Include="Model\TT_APS_WORK_ORDER.cs" />
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
     <Compile Include="Service\EquipmentEntity.cs" />
     <Compile Include="Model\TM_BAS_EQUIPMENT.cs" />
     <Compile Include="Model\TM_BAS_EQUIPMENT_VARIABLE.cs" />
     <Compile Include="Model\TT_PCS_CARRIER_CHECK.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="windown.cs">
+    <Compile Include="Service\WinService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="windown.Designer.cs">
-      <DependentUpon>windown.cs</DependentUpon>
+    <Compile Include="Service\WinService.Designer.cs">
+      <DependentUpon>WinService.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +103,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
