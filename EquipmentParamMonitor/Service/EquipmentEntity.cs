@@ -1,5 +1,6 @@
 ﻿using EquipmentParamMonitor.ACCESS;
 using EquipmentParamMonitor.Model;
+using Jakware.UaClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -56,6 +57,11 @@ namespace EquipmentParamMonitor.Service
 
         private void OpcClient_JakwareDataChangedEventHandler(UnifiedAutomation.UaClient.Subscription subscription, Jakware.UaClient.JakwareDataChangedEventArgs e)
         {
+            DataChangeEvent(e);
+        }
+
+        private async void DataChangeEvent(JakwareDataChangedEventArgs e)
+        {
             try
             {
                 var carrier = e.JakwareDataChanges.FirstOrDefault(o =>
@@ -67,21 +73,28 @@ namespace EquipmentParamMonitor.Service
                         this.carrierInfo = new CARRIERWORKORDER_INFO();
 
                         this.carrierInfo.carrierIDNumber = carrier.Value.Value.ToString();
-                        int count = 30;
+                        int count = 691200;
                         // var workOrderNumber = PCS_CARRIER_CHECK_MANAGER.GetList(o => o.CARRIER_NO.Equals(this.carrierInfo.carrierIDNumber, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                        TT_PCS_CARRIER_CHECK workOrderNumber = null;
-                        do
-                        {
-                            workOrderNumber = PCS_CARRIER_CHECK_MANAGER.GetList(o => o.CARRIER_NO.Equals(this.carrierInfo.carrierIDNumber, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                            Thread.Sleep(1000);
-                        } while (workOrderNumber == null && count-- > 0);
+                        TT_PCS_CARRIER_CHECK carrier_check_info = null;
 
-                        if (workOrderNumber == null || workOrderNumber.IS_EMPTY)
+                        await new TaskFactory().StartNew(() =>
                         {
+                            while (carrier_check_info == null && count-- > 0)
+                            {
+                                carrier_check_info = PCS_CARRIER_CHECK_MANAGER.GetList(o => o.CARRIER_NO.Equals(this.carrierInfo.carrierIDNumber, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                                LogHelper.Log.LogInfo($"{this.EntityName}:{this.carrierInfo.carrierIDNumber} is WAITTING.");
+
+                                Thread.Sleep(1000);
+                            }
+                        });
+
+                        if (carrier_check_info == null || carrier_check_info.IS_EMPTY)
+                        {
+                            LogHelper.Log.LogInfo($"{this.EntityName}:{this.carrierInfo.carrierIDNumber} is EMPTY.");
                             return;
                         }
 
-                        var workOrderInfo = APS_WORK_ORDER_MANAGER.GetList(o => o.ORDER_CODE.Equals(workOrderNumber.WORK_ORDER, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                        var workOrderInfo = APS_WORK_ORDER_MANAGER.GetList(o => o.ORDER_CODE.Equals(carrier_check_info.WORK_ORDER, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                         if (workOrderInfo == null)
                         {
                             return;
