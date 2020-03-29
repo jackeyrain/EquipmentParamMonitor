@@ -66,7 +66,7 @@ namespace EquipmentParamMonitor.Service
             {
                 var carrier = e.JakwareDataChanges.FirstOrDefault(o =>
                             o.MonitoredItem.NodeId.ToString().Equals(CarrierID.ToString(), StringComparison.OrdinalIgnoreCase));
-                if (carrier != null)
+                if (carrier != null && carrier.IsGood)
                 {
                     if (!carrier.Value.Value.ToString().Equals("0"))
                     {
@@ -137,7 +137,6 @@ namespace EquipmentParamMonitor.Service
             }
             catch (Exception ex)
             {
-                LogHelper.Log.LogInfo($"{ this.carrierInfo.carrierIDNumber} throw Exception.");
                 LogHelper.Log.LogInfo(ex, LogHelper.LogType.Exception);
             }
         }

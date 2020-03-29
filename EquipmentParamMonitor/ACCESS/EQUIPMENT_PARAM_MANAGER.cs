@@ -24,8 +24,10 @@ namespace EquipmentParamMonitor.ACCESS
                 o.EQUIP_TYPE.Equals("1", StringComparison.OrdinalIgnoreCase)
                 && o.NAME.StartsWith("CKPT_IP_LINE", StringComparison.OrdinalIgnoreCase)
                 && o.NAME.StartsWith(station.NAME, StringComparison.OrdinalIgnoreCase));
-                if (relationStation.Count <= 1)
-                    continue;
+
+                // 仅抓取具有加工设备的工位数据
+                //if (relationStation.Count <= 1)
+                //    continue;
 
                 // TODO: for testing
                 //if (!station.CODE.Contains("110"))

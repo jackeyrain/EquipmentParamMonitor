@@ -39,7 +39,10 @@
             // 
             // serviceInstaller1
             // 
+            this.serviceInstaller1.Description = "Pisces Equipment Parameters Log";
+            this.serviceInstaller1.DisplayName = "OPCParamsMonitor";
             this.serviceInstaller1.ServiceName = "OPCParamsMonitor";
+            this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
