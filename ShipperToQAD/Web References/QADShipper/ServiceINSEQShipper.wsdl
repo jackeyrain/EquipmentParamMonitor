@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:cmm="http://yfaiint.com/common/message/header/1" xmlns:tns="http://yfaiesb/services/ServiceINSEQShipper" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ServiceINSEQShipper" targetNamespace="http://yfaiesb/services/ServiceINSEQShipper" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation>
+    <wsdl:appinfo source="WMQI_APPINFO">
+      <MRWSDLAppInfo imported="true">
+        <binding hasEncoding="false" imported="true" name="ServiceINSEQShipperHttpBinding" originalBindingStyle="document" />
+      </MRWSDLAppInfo>
+    </wsdl:appinfo>
+  </wsdl:documentation>
+  <wsdl:types>
+    <xsd:schema xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" targetNamespace="http://yfaiesb/services/ServiceINSEQShipper">
+      <xsd:include schemaLocation="http://10.198.131.158:17800/YFAIesb/Services/ServiceINSEQShipper?xsd=xsd0" />
+    </xsd:schema>
+    <xsd:schema xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" targetNamespace="http://yfaiint.com/common/message/header/1">
+      <xsd:include schemaLocation="http://10.198.131.158:17800/YFAIesb/Services/ServiceINSEQShipper?xsd=xsd1" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="INSEQShipperRequestMsg">
+    <wsdl:part name="INSEQShipperParameters" element="tns:INSEQShipper" />
+  </wsdl:message>
+  <wsdl:message name="INSEQShipperResponseMsg">
+    <wsdl:part name="INSEQShipperResult" element="tns:INSEQShipperResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ServiceINSEQShipper">
+    <wsdl:operation name="INSEQShipper">
+      <wsdl:input name="INSEQShipperRequest" message="tns:INSEQShipperRequestMsg" />
+      <wsdl:output name="INSEQShipperResponse" message="tns:INSEQShipperResponseMsg" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServiceINSEQShipperHttpBinding" type="tns:ServiceINSEQShipper">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="INSEQShipper">
+      <soap:operation soapAction="http://ServiceINSEQShipper/INSEQShipper" />
+      <wsdl:input name="INSEQShipperRequest">
+        <soap:body use="literal" parts="INSEQShipperParameters" />
+      </wsdl:input>
+      <wsdl:output name="INSEQShipperResponse">
+        <soap:body use="literal" parts="INSEQShipperResult" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ServiceINSEQShipperHttpService">
+    <wsdl:port name="ServiceINSEQShipperHttpPort" binding="tns:ServiceINSEQShipperHttpBinding">
+      <soap:address location="http://10.198.131.158:17800/YFAIesb/Services/ServiceINSEQShipper" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

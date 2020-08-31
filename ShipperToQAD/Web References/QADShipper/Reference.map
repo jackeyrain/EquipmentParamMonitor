@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DiscoveryClientResultsFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Results>
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://10.198.131.158:17800/YFAIesb/Services/ServiceINSEQShipper?wsdl" filename="ServiceINSEQShipper.wsdl" />
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.SchemaReference" url="http://10.198.131.158:17800/YFAIesb/Services/ServiceINSEQShipper?xsd=xsd0" filename="ServiceINSEQShipper.xsd" />
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.SchemaReference" url="http://10.198.131.158:17800/YFAIesb/Services/ServiceINSEQShipper?xsd=xsd2" filename="ServiceINSEQShipper0.xsd" />
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.SchemaReference" url="http://10.198.131.158:17800/YFAIesb/Services/ServiceINSEQShipper?xsd=xsd1" filename="ServiceINSEQShipper1.xsd" />
+  </Results>
+</DiscoveryClientResultsFile>

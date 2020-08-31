@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:ns1="http://ServiceINSEQShipper" targetNamespace="http://yfaiesb/services/ServiceINSEQShipper" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:include schemaLocation="http://10.198.131.158:17800/YFAIesb/Services/ServiceINSEQShipper?xsd=xsd0" />
+</xsd:schema>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns="http://yfaiint.com/common/message/header/1" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:cmm="http://yfaiint.com/common/message/header/1" targetNamespace="http://yfaiint.com/common/message/header/1" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element ibmSchExtn:docRoot="true" name="YFAICommonHeader" type="cmm:YFAICommonHeader_Master">
+    <xsd:annotation>
+      <xsd:documentation>Common standard YFAI message header</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="YFAICommonHeader_Master">
+    <xsd:annotation>
+      <xsd:documentation>Common standard YFAI message header</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence />
+  </xsd:complexType>
+</xsd:schema>

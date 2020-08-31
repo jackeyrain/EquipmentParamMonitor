@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:tns="http://yfaiesb/services/ServiceINSEQShipper" targetNamespace="http://yfaiesb/services/ServiceINSEQShipper" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:include schemaLocation="http://10.198.131.158:17800/YFAIesb/Services/ServiceINSEQShipper?xsd=xsd2" />
+  <xsd:element ibmSchExtn:docRoot="true" name="INSEQShipper">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="0" maxOccurs="1" name="VIA_CODE" nillable="true" type="xsd:string" />
+        <xsd:element minOccurs="0" maxOccurs="1" name="TRUCK_ID" nillable="true" type="xsd:string" />
+        <xsd:element minOccurs="0" maxOccurs="1" name="BOL_NBR" nillable="true" type="xsd:string" />
+        <xsd:element minOccurs="0" maxOccurs="1" name="PCK_SLP_NBR" nillable="true" type="xsd:string" />
+        <xsd:element minOccurs="0" maxOccurs="1" name="SITE_NBR" nillable="true" type="xsd:string" />
+        <xsd:element minOccurs="0" maxOccurs="1" name="SHIP_TS" nillable="true" type="xsd:string" />
+        <xsd:element minOccurs="0" maxOccurs="1" name="ADDR_CODE" nillable="true" type="xsd:string" />
+        <xsd:element minOccurs="0" maxOccurs="1" name="SERL_NBR" nillable="true" type="xsd:string" />
+        <xsd:element minOccurs="1" maxOccurs="1" name="INSEQShippers" nillable="true" type="tns:INSEQShippersType" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="INSEQShippersType">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" maxOccurs="unbounded" name="INSEQShipper" nillable="true" type="tns:INSEQShipperType" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="INSEQShipperType">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" maxOccurs="1" name="SERL_NBR_TYPE" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="SERL_NBR" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="SERL_QTY" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="LIN_CUST_ITEM" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="LIN_VIN" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="LIN_PO_NBR" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="RECID_PKG" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="PARENTRECID_PKG" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="RECID_PRT" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="LIN_JOB_SEQ_A" nillable="true" type="xsd:string" />
+      <xsd:element minOccurs="0" maxOccurs="1" name="LIN_JOB_SEQ_B" nillable="true" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element ibmSchExtn:docRoot="true" name="INSEQShipperResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" maxOccurs="1" name="Result" nillable="true" type="xsd:string" />
+        <xsd:element minOccurs="0" name="Exceptions" nillable="true" type="tns:ExceptionsType" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="ExceptionsType">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="ERR_MSG" nillable="true" type="tns:ERR_MSGType" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ERR_MSGType">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="MSG_Index" type="xsd:string" />
+      <xsd:element minOccurs="0" name="Msg_Desc" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
