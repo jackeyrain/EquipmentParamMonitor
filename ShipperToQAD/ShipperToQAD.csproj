@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntityExtend.cs" />
+    <Compile Include="Entity\CIM_VEHICLE_CATEGORY.cs" />
     <Compile Include="Entity\LOADING_LIST.cs" />
     <Compile Include="Entity\LOADING_LIST_DETAIL.cs" />
     <Compile Include="Entity\OPCS.cs" />

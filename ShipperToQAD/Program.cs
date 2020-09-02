@@ -19,12 +19,27 @@ namespace ShipperToQAD
             fsql = new FreeSql.FreeSqlBuilder()
                  .UseConnectionString(FreeSql.DataType.SqlServer, ConfigurationManager.AppSettings["db_connectionstring"])
                  // .UseMonitorCommand(o => Console.WriteLine(o.CommandText), (o, p) => Console.WriteLine(o.CommandText))
-                 .Build(); //请务必定义成 Singleton 单例模式
-
-            Implement(fsql);
+                 .Build();
+            //请务必定义成 Singleton 单例模式
+            //#if DEBUG
+            //            var obj = EntityExtend.Deserial<INSEQShipper>("<INSEQShipper><VIA_CODE>CTIIM</VIA_CODE><TRUCK_ID>1234</TRUCK_ID><BOL_NBR>N8LAL83100023</BOL_NBR><PCK_SLP_NBR>N8LAL83100023</PCK_SLP_NBR><SITE_NBR>1066</SITE_NBR><SHIP_TS>2020.08.31T04:09:49</SHIP_TS><ADDR_CODE>81560059</ADDR_CODE><SERL_NBR>53</SERL_NBR><INSEQShippers><INSEQShipper><SERL_NBR_TYPE>PRT</SERL_NBR_TYPE><SERL_NBR>23715</SERL_NBR><SERL_QTY>1</SERL_QTY><LIN_CUST_ITEM>6FK871X7AG</LIN_CUST_ITEM><LIN_VIN>151329</LIN_VIN><LIN_PO_NBR /><RECID_PKG>1</RECID_PKG><PARENTRECID_PKG>1</PARENTRECID_PKG><RECID_PRT>1</RECID_PRT><LIN_JOB_SEQ_A>4863490</LIN_JOB_SEQ_A><LIN_JOB_SEQ_B /></INSEQShipper><INSEQShipper><SERL_NBR_TYPE>PRT</SERL_NBR_TYPE><SERL_NBR>23716</SERL_NBR><SERL_QTY>1</SERL_QTY><LIN_CUST_ITEM>6FK871X7AG</LIN_CUST_ITEM><LIN_VIN>153550</LIN_VIN><LIN_PO_NBR /><RECID_PKG>1</RECID_PKG><PARENTRECID_PKG>1</PARENTRECID_PKG><RECID_PRT>2</RECID_PRT><LIN_JOB_SEQ_A>4863500</LIN_JOB_SEQ_A><LIN_JOB_SEQ_B /></INSEQShipper><INSEQShipper><SERL_NBR_TYPE>PRT</SERL_NBR_TYPE><SERL_NBR>23717</SERL_NBR><SERL_QTY>1</SERL_QTY><LIN_CUST_ITEM>6FK881X7AG</LIN_CUST_ITEM><LIN_VIN>154618</LIN_VIN><LIN_PO_NBR /><RECID_PKG>1</RECID_PKG><PARENTRECID_PKG>1</PARENTRECID_PKG><RECID_PRT>3</RECID_PRT><LIN_JOB_SEQ_A>4863510</LIN_JOB_SEQ_A><LIN_JOB_SEQ_B /></INSEQShipper></INSEQShippers></INSEQShipper>");
+            //            obj.BOL_NBR = AdjustShipperNumber(long.Parse(obj.SERL_NBR));
+            //            obj.PCK_SLP_NBR = obj.BOL_NBR;
+            //            var proxy = new ServiceINSEQShipperHttpService();
+            //            proxy.Timeout = 1000 * 60;
+            //            var response = proxy.INSEQShipper(obj);
+            //#endif
+            try
+            {
+                Implement(fsql);
+            }
+            catch (Exception ex)
+            {
+                Log("SEND TO ESB", ex.Message, 4, "InternalError");
+            }
         }
 
-        private static void Log(string key, string xml, string error)
+        private static void Log(string key, string xml, int result, string error)
         {
             using (var uom = fsql.CreateUnitOfWork())
             {
@@ -34,7 +49,7 @@ namespace ShipperToQAD
                     METHORD_NAME = "SEND TO ESB",
                     EXECUTE_START_TIME = DateTime.Now,
                     EXECUTE_END_TIME = DateTime.Now,
-                    EXECUTE_RESULT = string.IsNullOrEmpty(error) ? 1 : 2,
+                    EXECUTE_RESULT = result,
                     KEY_VALUE = key,
                     SOURCE_XML = xml,
                     ERROR_DESCRIPTION = error,
@@ -63,6 +78,8 @@ namespace ShipperToQAD
             foreach (LOADING_LIST loading in loadings)
             {
                 int index = 1;
+                // 获取年度标识
+                List<CIM_VEHICLE_CATEGORY> cIM_VEHICLE_CATEGORies = fsql.GetRepository<CIM_VEHICLE_CATEGORY>().Where(o => o.VALID_FLAG).ToList();
 
                 List<INSEQShipperType> iNSEQShipperTypes = new List<INSEQShipperType>();
                 Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Start to send truck {loading.LOADING_LIST_CODE}");
@@ -82,6 +99,7 @@ namespace ShipperToQAD
                     foreach (SHIPPING_DETAIL detail in shipping.SHIPPING_DETAILs)
                     {
                         var opcs = opcsOrm.Where(o => o.CARSEQUENCE == detail.CUST_INFO_SEQ).First();
+                        var modelYear = cIM_VEHICLE_CATEGORies.FirstOrDefault(o => o.VEHICLE_YEAR.Equals(opcs.MODELYEAR, StringComparison.OrdinalIgnoreCase));
                         var shipping_detail = part_shipping.pART_SHIPPING_DETAILs.FirstOrDefault(o => o.CUST_PART_NO.Equals(detail.CUST_PART_NO, StringComparison.OrdinalIgnoreCase));
                         // 判断发运明细是否需要发运，以FRAME_AGREEMENT_CODE作为判断依据
                         if (shipping_detail == null || !shipping_detail.FRAME_AGREEMENT_CODE.Equals("1066", StringComparison.OrdinalIgnoreCase))
@@ -95,7 +113,7 @@ namespace ShipperToQAD
                             SERL_NBR = detail.ID.ToString(), // INTERNAL IPC SERIAL, WILL NOT BE TRANSFERRED TO QAD. what's this field's meaning.
                             SERL_QTY = detail.ACTUAL_QTY.ToString(), // QTY OF ITEM BASED ON THE VIN DETAIL
                             LIN_CUST_ITEM = detail.CUST_PART_NO, // CUSTOMER ITEM IN THE BROADCAST
-                            LIN_VIN = opcs.VIN, // VIN DETAIL ON THE BROADCAST. 
+                            LIN_VIN = modelYear.VEHICLE_CATEGORY_CODE + opcs.VIN, // VIN DETAIL ON THE BROADCAST. 
 
                             LIN_PO_NBR = string.Empty, // define as empty
 
@@ -114,8 +132,8 @@ namespace ShipperToQAD
                 {
                     VIA_CODE = "CTIIM", // THIS FIELD IS A HARDCODED VALUE
                     TRUCK_ID = "1234", // THIS FIELD IS A HARDCODED VALUE
-                    BOL_NBR = loading.LOADING_LIST_CODE, // Pisces shipper order number
-                    PCK_SLP_NBR = loading.LOADING_LIST_CODE, // Pisces shipper order number
+                    BOL_NBR = AdjustShipperNumber(loading.ID), // Pisces shipper order number
+                    PCK_SLP_NBR = AdjustShipperNumber(loading.ID), // Pisces shipper order number
                     SITE_NBR = "1066", // YFAI SITE CODE IN QAD
                     SHIP_TS = loading.END_SCAN_TIME.Value.ToString("yyyy.MM.ddTHH:mm:ss"), // "2019.08.12T17:57:06 GMT-05:00",
                     ADDR_CODE = loading.CUST_CODE, // QAD SHIP-TO ADDRESS
@@ -123,37 +141,53 @@ namespace ShipperToQAD
                     INSEQShippers = iNSEQShipperTypes.ToArray(),
                 };
 
-
                 try
                 {
                     Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Send to ESB {loading.LOADING_LIST_CODE}");
                     var proxy = new ServiceINSEQShipperHttpService();
-                    proxy.Timeout = 1000 * 30;
+                    proxy.Timeout = 1000 * 300;
                     var response = proxy.INSEQShipper(iNSEQShipper);
-                    if (response.Result == "SUCCESS")
+                    if (response.Result.Equals("success"))
                     {
-                        Log(loading.LOADING_LIST_CODE, iNSEQShipper.ToXml(), string.Empty);
+                        Log(loading.LOADING_LIST_CODE, iNSEQShipper.ToXml(), 1, string.Empty);
 
                         loading.REMARK = "ESB_SUCCESS";
                         fsql.Update<LOADING_LIST>().SetSource(loading).ExecuteAffrows();
                         Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Send to ESB {loading.LOADING_LIST_CODE} is Success.");
                     }
+                    else if (response.Result.Equals("warning", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Log(loading.LOADING_LIST_CODE, iNSEQShipper.ToXml(), 3, response.Exceptions?.ERR_MSG.Msg_Desc);
+
+                        loading.REMARK = "ESB_WARNING";
+                        fsql.Update<LOADING_LIST>().SetSource(loading).ExecuteAffrows();
+                        Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Send to ESB {loading.LOADING_LIST_CODE} is Success.");
+                    }
                     else
                     {
-                        Log(loading.LOADING_LIST_CODE, iNSEQShipper.ToXml(), response.Exceptions?.ERR_MSG.Msg_Desc);
-                        loading.REMARK = "ESB_FAIL";
+                        Log(loading.LOADING_LIST_CODE, iNSEQShipper.ToXml(), 2, response.Exceptions?.ERR_MSG.Msg_Desc);
+                        loading.REMARK = "ESB_ERROR";
                         fsql.Update<LOADING_LIST>().SetSource(loading).ExecuteAffrows();
                         Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Send to ESB {loading.LOADING_LIST_CODE} is Fail.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log(loading.LOADING_LIST_CODE, iNSEQShipper.ToXml(), ex.Message);
+                    Log(loading.LOADING_LIST_CODE, iNSEQShipper.ToXml(), 2, ex.Message);
                     loading.REMARK = "ESB_FAIL";
                     fsql.Update<LOADING_LIST>().SetSource(loading).ExecuteAffrows();
                     Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Send to ESB {loading.LOADING_LIST_CODE} is Success.");
                 }
             }
+        }
+
+        private static string AdjustShipperNumber(long id)
+        {
+            var number = id;
+            var pre = 36.ToString();
+            var rea = (id + 6000).ToString().PadLeft(6, '0');
+            var serialNumber = pre + rea;
+            return serialNumber;
         }
     }
 }
