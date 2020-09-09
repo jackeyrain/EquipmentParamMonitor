@@ -145,6 +145,7 @@ namespace ShipperToQAD
                 {
                     Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Send to ESB {loading.LOADING_LIST_CODE}");
                     var proxy = new ServiceINSEQShipperHttpService();
+                    proxy.Url = ConfigurationManager.AppSettings["esb"];
                     proxy.Timeout = 1000 * 300;
                     var response = proxy.INSEQShipper(iNSEQShipper);
                     if (response.Result.Equals("success"))
