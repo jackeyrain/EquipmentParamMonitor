@@ -19,8 +19,18 @@ namespace BroadCastDispatch
 
             while (true)
             {
-                Implement(broadcastSections);
-                Thread.Sleep(5000);
+                try
+                {
+                    Implement(broadcastSections);
+                }
+                catch (Exception ex)
+                {
+                    Log(ex.Message, LogLevel.ERROR);
+                }
+                finally
+                {
+                    Thread.Sleep(5000);
+                }
             }
         }
 
