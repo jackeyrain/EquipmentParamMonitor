@@ -100,7 +100,7 @@ namespace ShipperToQAD
                     {
                         var opcs = opcsOrm.Where(o => o.CARSEQUENCE == detail.CUST_INFO_SEQ).First();
                         var modelYear = cIM_VEHICLE_CATEGORies.FirstOrDefault(o => o.VEHICLE_YEAR.Equals(opcs.MODELYEAR, StringComparison.OrdinalIgnoreCase));
-                        var shipping_detail = part_shipping.pART_SHIPPING_DETAILs.FirstOrDefault(o => o.CUST_PART_NO.Equals(detail.CUST_PART_NO, StringComparison.OrdinalIgnoreCase));
+                        var shipping_detail = part_shipping.pART_SHIPPING_DETAILs.FirstOrDefault(o => o.PART_NO.Equals(detail.PART_NO, StringComparison.OrdinalIgnoreCase));
                         // 判断发运明细是否需要发运，以FRAME_AGREEMENT_CODE作为判断依据
                         if (shipping_detail == null || !shipping_detail.FRAME_AGREEMENT_CODE.Equals("1066", StringComparison.OrdinalIgnoreCase))
                         {
@@ -146,7 +146,7 @@ namespace ShipperToQAD
                     Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Send to ESB {loading.LOADING_LIST_CODE}");
                     var proxy = new ServiceINSEQShipperHttpService();
                     proxy.Url = ConfigurationManager.AppSettings["esb"];
-                    proxy.Timeout = 1000 * 300;
+                    proxy.Timeout = 1000 * 600;
                     var response = proxy.INSEQShipper(iNSEQShipper);
                     if (response.Result.Equals("success"))
                     {

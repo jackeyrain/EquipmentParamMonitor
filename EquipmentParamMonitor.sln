@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipperToQAD", "ShipperToQA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BroadCastDispatch", "BroadCastDispatch\BroadCastDispatch.csproj", "{F5001DDC-E904-483E-972C-FD3718E58BD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JISBroad", "JISBroad\JISBroad.csproj", "{156CA871-D1A3-4ADE-8E5D-0ADBA4254D0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F5001DDC-E904-483E-972C-FD3718E58BD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5001DDC-E904-483E-972C-FD3718E58BD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5001DDC-E904-483E-972C-FD3718E58BD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{156CA871-D1A3-4ADE-8E5D-0ADBA4254D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{156CA871-D1A3-4ADE-8E5D-0ADBA4254D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{156CA871-D1A3-4ADE-8E5D-0ADBA4254D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{156CA871-D1A3-4ADE-8E5D-0ADBA4254D0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
