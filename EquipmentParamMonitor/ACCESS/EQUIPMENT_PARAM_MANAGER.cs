@@ -13,6 +13,7 @@ namespace EquipmentParamMonitor.ACCESS
         public List<TM_BAS_EQUIPMENT[]> GetEquipmentSet()
         {
             var result = new List<TM_BAS_EQUIPMENT[]>();
+            // 获取主工位设备
             var stationSet = this.GetList(o =>
             o.EQUIP_TYPE.Equals("1", StringComparison.OrdinalIgnoreCase)
             && !o.CODE.StartsWith("TT", StringComparison.OrdinalIgnoreCase)
@@ -20,10 +21,18 @@ namespace EquipmentParamMonitor.ACCESS
             );
             foreach (var station in stationSet)
             {
+                // 通过遍历主工位，获取工位设备与其加工设备 
+
+                //var relationStation = this.GetList(o =>
+                //o.EQUIP_TYPE.Equals("1", StringComparison.OrdinalIgnoreCase)
+                //&& o.NAME.StartsWith("CKPT_IP_LINE", StringComparison.OrdinalIgnoreCase)
+                //&& o.NAME.StartsWith(station.NAME, StringComparison.OrdinalIgnoreCase));
+
                 var relationStation = this.GetList(o =>
-                o.EQUIP_TYPE.Equals("1", StringComparison.OrdinalIgnoreCase)
-                && o.NAME.StartsWith("CKPT_IP_LINE", StringComparison.OrdinalIgnoreCase)
-                && o.NAME.StartsWith(station.NAME, StringComparison.OrdinalIgnoreCase));
+                   o.EQUIP_TYPE.Equals("1", StringComparison.OrdinalIgnoreCase) &&
+                   o.LOCATION.Equals(station.NAME, StringComparison.OrdinalIgnoreCase));
+                // 将本工位设备加入
+                relationStation.Insert(0, station);
 
                 // 仅抓取具有加工设备的工位数据
                 //if (relationStation.Count <= 1)

@@ -39,6 +39,7 @@ namespace EquipmentParamMonitor
             List<EquipmentEntity> entity = new List<EquipmentEntity>();
 
             EQUIPMENT_PARAM_MANAGER manager = new EQUIPMENT_PARAM_MANAGER();
+            // 获取所有工位级设备，分组保存
             var _EQUIPMENT = manager.GetEquipmentSet();
             foreach (var equipment in _EQUIPMENT)
             {

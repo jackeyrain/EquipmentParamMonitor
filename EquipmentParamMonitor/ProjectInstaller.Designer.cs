@@ -39,6 +39,7 @@
             // 
             // serviceInstaller1
             // 
+            this.serviceInstaller1.DelayedAutoStart = true;
             this.serviceInstaller1.Description = "Pisces Equipment Parameters Log";
             this.serviceInstaller1.DisplayName = "OPCParamsMonitor";
             this.serviceInstaller1.ServiceName = "OPCParamsMonitor";

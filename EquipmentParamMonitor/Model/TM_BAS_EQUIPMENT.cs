@@ -24,7 +24,7 @@ namespace EquipmentParamMonitor.Model
 
         public override string ToString()
         {
-            return $"{NAME}{GROUP_NAME}";
+            return $"{GROUP_NAME}-{CODE}";
         }
     }
 }

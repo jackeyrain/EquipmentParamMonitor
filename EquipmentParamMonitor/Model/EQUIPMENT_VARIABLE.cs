@@ -17,5 +17,10 @@ namespace EquipmentParamMonitor.Model
         public string DESCRIPTION { set; get; }
         public string VARIABLE_TYPE { set; get; }
         public string DATA_TYPE { set; get; }
+
+        public override string ToString()
+        {
+            return $"{GROUP_NAME}.{PARAMCODE}";
+        }
     }
 }
