@@ -48,10 +48,12 @@ namespace BroadCastDispatch
                 var files = Directory.GetFiles(o.Source);
                 Log($"There are {files.Length} files...", LogLevel.LOG);
                 var fileInfos = Array.ConvertAll(files, f => new FileInfo(f));
-                var valFileInfos = fileInfos.Where(fi => fi.CreationTime <= DateTime.Now.AddSeconds(5)).OrderBy(fi => fi.CreationTime).ToList();
+                var valFileInfos = fileInfos.OrderBy(fi => fi.CreationTime).ToList();
                 Log($"There are {valFileInfos.Count} available files...", LogLevel.LOG);
                 foreach (var fi in valFileInfos)
                 {
+                    // 获取文件后，delay 5s，确保文件写入完成
+                    Thread.Sleep(5 * 1000);
                     var content = File.ReadAllText(fi.FullName);
                     var key = content.Substring(10, 2).Trim();
                     if (!o.BroadcastType.Equals(key, StringComparison.OrdinalIgnoreCase))
