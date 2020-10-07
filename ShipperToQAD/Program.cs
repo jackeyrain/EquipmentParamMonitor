@@ -99,7 +99,7 @@ namespace ShipperToQAD
                     foreach (SHIPPING_DETAIL detail in shipping.SHIPPING_DETAILs)
                     {
                         var opcs = opcsOrm.Where(o => o.CARSEQUENCE == detail.CUST_INFO_SEQ).First();
-                        var modelYear = cIM_VEHICLE_CATEGORies.FirstOrDefault(o => o.VEHICLE_YEAR.Equals(opcs.MODELYEAR, StringComparison.OrdinalIgnoreCase));
+                        // var modelYear = cIM_VEHICLE_CATEGORies.FirstOrDefault(o => o.VEHICLE_YEAR.Equals(opcs.MODELYEAR, StringComparison.OrdinalIgnoreCase));
                         var shipping_detail = part_shipping.pART_SHIPPING_DETAILs.FirstOrDefault(o => o.PART_NO.Equals(detail.PART_NO, StringComparison.OrdinalIgnoreCase));
                         // 判断发运明细是否需要发运，以FRAME_AGREEMENT_CODE作为判断依据
                         if (shipping_detail == null || !shipping_detail.FRAME_AGREEMENT_CODE.Equals("1066", StringComparison.OrdinalIgnoreCase))
@@ -113,7 +113,7 @@ namespace ShipperToQAD
                             SERL_NBR = detail.ID.ToString(), // INTERNAL IPC SERIAL, WILL NOT BE TRANSFERRED TO QAD. what's this field's meaning.
                             SERL_QTY = detail.ACTUAL_QTY.ToString(), // QTY OF ITEM BASED ON THE VIN DETAIL
                             LIN_CUST_ITEM = detail.CUST_PART_NO, // CUSTOMER ITEM IN THE BROADCAST
-                            LIN_VIN = modelYear.VEHICLE_CATEGORY_CODE + opcs.VIN, // VIN DETAIL ON THE BROADCAST. 
+                            LIN_VIN = detail.LZ_VIN_CODE, // modelYear.VEHICLE_CATEGORY_CODE + opcs.VIN, // VIN DETAIL ON THE BROADCAST. 
 
                             LIN_PO_NBR = string.Empty, // define as empty
 

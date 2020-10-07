@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace BroadCastDispatch
 {
@@ -71,6 +68,8 @@ namespace BroadCastDispatch
                         Log($"{fi.Name} -- {ex.Message}", LogLevel.ERROR);
                     }
                 }
+
+                Thread.Sleep(1000);
             });
         }
 

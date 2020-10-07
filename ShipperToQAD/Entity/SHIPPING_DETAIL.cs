@@ -31,6 +31,7 @@ namespace ShipperToQAD.Entity
         public string CUST_ORDER_CODE { get; set; }
         public int STATUS { get; set; }
         public long SOURCE_ID { get; set; }
+        public string LZ_VIN_CODE { get; set; }
 
     }
 }

@@ -20,7 +20,7 @@ namespace KanBanDataService
             var model = ConfigurationManager.AppSettings["MODEL"];
             if (model.Equals("service", StringComparison.OrdinalIgnoreCase))
             {
-                Jakware.LogHelper.LogHelper.Log.LogInfo("Start service by Service Model.", Jakware.LogHelper.LogHelper.LogType.Information);
+                Console.WriteLine("Start service by Service Model.");
                 ServiceBase[] ServicesToRun;
                 ServicesToRun = new ServiceBase[]
                 {
@@ -30,7 +30,7 @@ namespace KanBanDataService
             }
             else
             {
-                Jakware.LogHelper.LogHelper.Log.LogInfo("Start service by Application Model.", Jakware.LogHelper.LogHelper.LogType.Information);
+                Console.WriteLine("Start service by Application Model.");
                 new KanbanData().Start();
 
                 Console.WriteLine("Input Exit to exit application");
