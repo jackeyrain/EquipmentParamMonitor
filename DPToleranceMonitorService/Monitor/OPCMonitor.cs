@@ -41,9 +41,26 @@ namespace DPToleranceMonitorService.Monitor
         {
             foreach (var item in e.JakwareDataChanges)
             {
+                // 写入队列组
                 _toleranceEntities.Where(o => o.TagAddress.Equals(item.MonitoredItem.NodeId.ToString()))
                     .ToList()
                     .ForEach(o => { o.Value = item.Value; });
+
+                // 得到就绪信号
+                if (item.MonitoredItem.NodeId.ToString().Equals(ToleranceInstance.Require.TagAddress, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (item.Value.Equals(ToleranceInstance.Require.Value))
+                    {
+                        if (ToleranceInstance.CheckTolerance())
+                        {
+                            // 成功
+                        }
+                        else
+                        {
+                            // 失败
+                        }
+                    }
+                }
             }
         }
 
@@ -61,6 +78,15 @@ namespace DPToleranceMonitorService.Monitor
         public void Stop()
         {
             cts.Cancel();
+        }
+        public void Show(string area = "")
+        {
+            ToleranceInstance.Show(area);
+        }
+
+        internal void AreaList()
+        {
+            Console.WriteLine(string.Join(",", Array.ConvertAll(ToleranceInstance.Data, o => o.Area)));
         }
     }
 }

@@ -5,7 +5,7 @@ namespace DPToleranceMonitorService.Extend
 {
     public static class ToleranceExtend
     {
-        public static void Load(this ToleranceInstance source, string filePath)
+        public static ToleranceInstance Load(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -13,7 +13,7 @@ namespace DPToleranceMonitorService.Extend
             }
             var jsonContent = File.ReadAllText(filePath);
             var instance = Newtonsoft.Json.JsonConvert.DeserializeObject<ToleranceInstance>(jsonContent);
-            source = instance;
+            return instance;
         }
     }
 }

@@ -6,25 +6,74 @@
       "Area": "1#",
       "Tolerances": [
         {
-          "Name": "A",
-          "TagAddress": null,
-          "Min": 0.0,
-          "Max": 1.0,
+          "Name": "Barcode01",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_00.DATA",
+          "Min": 0,
+          "Max": 0,
           "Accurate": null
         },
         {
-          "Name": "B",
-          "TagAddress": null,
-          "Min": 0.0,
-          "Max": 1.0,
+          "Name": "Barcode02",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_01.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode03",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_02.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode04",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_03.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode05",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_04.DATA",
+          "Min": 0,
+          "Max": 0,
           "Accurate": "True"
         },
         {
-          "Name": "C",
-          "TagAddress": null,
-          "Min": 0.0,
-          "Max": 1.0,
-          "Accurate": "True"
+          "Name": "Barcode06",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_05.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode07",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_06.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode08",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_07.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode09",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_08.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode10",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_09.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
         }
       ]
     },
@@ -32,21 +81,88 @@
       "Area": "2#",
       "Tolerances": [
         {
-          "Name": "D",
-          "TagAddress": null,
-          "Min": 0.0,
-          "Max": 1.0,
+          "Name": "Barcode01",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_00.DATA",
+          "Min": 0,
+          "Max": 0,
           "Accurate": null
         },
         {
-          "Name": "E",
-          "TagAddress": null,
-          "Min": 0.0,
-          "Max": 1.0,
+          "Name": "Barcode02",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_01.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode03",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_02.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode04",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_03.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode05",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_04.DATA",
+          "Min": 0,
+          "Max": 0,
           "Accurate": "True"
+        },
+        {
+          "Name": "Barcode06",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_05.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode07",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_06.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode08",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_07.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode09",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_08.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
+        },
+        {
+          "Name": "Barcode10",
+          "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceToMES.Barcodes_x.Barcodes_09.DATA",
+          "Min": 0,
+          "Max": 0,
+          "Accurate": null
         }
       ]
     }
   ],
-  "Result": null
+  "Require": {
+    "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceFromMES.iStatus",
+    "Value": 1
+  },
+  "Result": {
+    "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceFromMES.StatusCode",
+    "Value": 1
+  },
+  "Ack": {
+    "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceFromMES.MachineResetACK",
+    "Value": true
+  }
 }

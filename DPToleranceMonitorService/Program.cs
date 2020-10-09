@@ -16,16 +16,29 @@ namespace DPToleranceMonitorService
             var opc = container.Resolve<OPCMonitor>();
             opc.Initialize();
 
-            while (!Console.ReadLine().Equals("exit", StringComparison.OrdinalIgnoreCase))
+
+            Console.WriteLine(File.ReadAllText("Readme.txt"));
+            // 获取输入命令
+            string[] command = null;
+            do
             {
-                return;
-            }
+                command = Console.ReadLine().Split(new[] { ' ' });
+                // 如果是现实参数命令
+                if (command[0].Equals("show", StringComparison.OrdinalIgnoreCase))
+                {
+                    string area = command.Length >= 2 ? command[1] : string.Empty;
+                    opc.Show(area);
+                }
+                else if (command[0].Equals("arealist", StringComparison.OrdinalIgnoreCase))
+                {
+                    opc.AreaList();
+                }
+            } while (!command[0].Equals("exit", StringComparison.OrdinalIgnoreCase));
         }
 
         private static IContainer BuildContainer()
         {
-            var toleranceInstance = new ToleranceInstance();
-            toleranceInstance.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ConfigFile", "Tolerance.json"));
+            var toleranceInstance = ToleranceExtend.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ConfigFile", "Tolerance.json"));
 
             var builder = new ContainerBuilder();
             builder.Register<OPCMonitor>((o, p) => new OPCMonitor(toleranceInstance)).InstancePerLifetimeScope();
