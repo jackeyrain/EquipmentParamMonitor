@@ -1,18 +1,17 @@
 ﻿using ShipperToQAD.Entity;
 using ShipperToQAD.QADShipper;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ShipperToQAD
 {
     class Program
     {
         static IFreeSql fsql = null;
+        static List<string> LaborPartCategory = null;
+        static string LaborPartNumber = string.Empty;
 
         static void Main(string[] args)
         {
@@ -20,6 +19,11 @@ namespace ShipperToQAD
                  .UseConnectionString(FreeSql.DataType.SqlServer, ConfigurationManager.AppSettings["db_connectionstring"])
                  // .UseMonitorCommand(o => Console.WriteLine(o.CommandText), (o, p) => Console.WriteLine(o.CommandText))
                  .Build();
+
+            LaborPartCategory = new List<string>();
+            LaborPartCategory.AddRange(ConfigurationManager.AppSettings["LaborPartCategory"]?.Split(new[] { ',' }));
+            LaborPartNumber = ConfigurationManager.AppSettings["LaborPartNumber"];
+
             //请务必定义成 Singleton 单例模式
             //#if DEBUG
             //            var obj = EntityExtend.Deserial<INSEQShipper>("<INSEQShipper><VIA_CODE>CTIIM</VIA_CODE><TRUCK_ID>1234</TRUCK_ID><BOL_NBR>N8LAL83100023</BOL_NBR><PCK_SLP_NBR>N8LAL83100023</PCK_SLP_NBR><SITE_NBR>1066</SITE_NBR><SHIP_TS>2020.08.31T04:09:49</SHIP_TS><ADDR_CODE>81560059</ADDR_CODE><SERL_NBR>53</SERL_NBR><INSEQShippers><INSEQShipper><SERL_NBR_TYPE>PRT</SERL_NBR_TYPE><SERL_NBR>23715</SERL_NBR><SERL_QTY>1</SERL_QTY><LIN_CUST_ITEM>6FK871X7AG</LIN_CUST_ITEM><LIN_VIN>151329</LIN_VIN><LIN_PO_NBR /><RECID_PKG>1</RECID_PKG><PARENTRECID_PKG>1</PARENTRECID_PKG><RECID_PRT>1</RECID_PRT><LIN_JOB_SEQ_A>4863490</LIN_JOB_SEQ_A><LIN_JOB_SEQ_B /></INSEQShipper><INSEQShipper><SERL_NBR_TYPE>PRT</SERL_NBR_TYPE><SERL_NBR>23716</SERL_NBR><SERL_QTY>1</SERL_QTY><LIN_CUST_ITEM>6FK871X7AG</LIN_CUST_ITEM><LIN_VIN>153550</LIN_VIN><LIN_PO_NBR /><RECID_PKG>1</RECID_PKG><PARENTRECID_PKG>1</PARENTRECID_PKG><RECID_PRT>2</RECID_PRT><LIN_JOB_SEQ_A>4863500</LIN_JOB_SEQ_A><LIN_JOB_SEQ_B /></INSEQShipper><INSEQShipper><SERL_NBR_TYPE>PRT</SERL_NBR_TYPE><SERL_NBR>23717</SERL_NBR><SERL_QTY>1</SERL_QTY><LIN_CUST_ITEM>6FK881X7AG</LIN_CUST_ITEM><LIN_VIN>154618</LIN_VIN><LIN_PO_NBR /><RECID_PKG>1</RECID_PKG><PARENTRECID_PKG>1</PARENTRECID_PKG><RECID_PRT>3</RECID_PRT><LIN_JOB_SEQ_A>4863510</LIN_JOB_SEQ_A><LIN_JOB_SEQ_B /></INSEQShipper></INSEQShippers></INSEQShipper>");
@@ -70,6 +74,7 @@ namespace ShipperToQAD
                     (string.IsNullOrEmpty(o.REMARK)
                         // || o.REMARK.Equals("ESB_FAIL", StringComparison.OrdinalIgnoreCase)
                         || o.REMARK.Equals("ESB_RESEND", StringComparison.OrdinalIgnoreCase)))
+                //.Where(o=> o.ID == 70)
                 .IncludeMany(o => o.LOADING_LIST_DETAILS.Where(p => o.FID == p.LOADING_LIST_FID))
                 .ToList();
 
@@ -125,6 +130,29 @@ namespace ShipperToQAD
                             LIN_JOB_SEQ_B = string.Empty, // define as empty
                         });
                         Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Add shipper detail {part_shipping.PART_SHIPPING_CODE} - {opcs.VIN}");
+
+                        // 判断当前发运组是否是符合添加Labor Part规则
+                        if (LaborPartCategory.Any(o => part_shipping.PART_SHIPPING_CODE.Equals(o, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            iNSEQShipperTypes.Add(new INSEQShipperType
+                            {
+                                SERL_NBR_TYPE = "PRT", // RCK IS THE VALUE OF THE SERIAL TYPE LEVEL 1
+                                SERL_NBR = detail.ID.ToString(), // INTERNAL IPC SERIAL, WILL NOT BE TRANSFERRED TO QAD. what's this field's meaning.
+                                SERL_QTY = detail.ACTUAL_QTY.ToString(), // QTY OF ITEM BASED ON THE VIN DETAIL
+                                LIN_CUST_ITEM = LaborPartNumber, // CUSTOMER ITEM IN THE BROADCAST
+                                LIN_VIN = detail.LZ_VIN_CODE, // modelYear.VEHICLE_CATEGORY_CODE + opcs.VIN, // VIN DETAIL ON THE BROADCAST. 
+
+                                LIN_PO_NBR = string.Empty, // define as empty
+
+                                RECID_PKG = "1", // PACKSLIP RANGE DEFINED FOR HIGHLAND PARK
+                                PARENTRECID_PKG = "1", // PACKSLIP RANGE DEFINED FOR HIGHLAND PARK
+                                RECID_PRT = index++.ToString(), // BOL ALWAYS EQUALS THE PACKSLIP IN QAD
+
+                                LIN_JOB_SEQ_A = opcs.CARSEQUENCE.ToString(), // CUSTOMER BROADCAST SEQUENCE
+                                LIN_JOB_SEQ_B = string.Empty, // define as empty
+                            });
+                            Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Add shipper detail {part_shipping.PART_SHIPPING_CODE} - {opcs.VIN}");
+                        }
                     }
                 }
 
