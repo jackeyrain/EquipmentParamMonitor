@@ -1,0 +1,52 @@
+{
+  "OPCServer": "opc.tcp://10.16.112.50:49320",
+  "Verification": "ACCURATE",
+  "Data": [
+    {
+      "Area": "1#",
+      "Tolerances": [
+        {
+          "Name": "A",
+          "TagAddress": null,
+          "Min": 0.0,
+          "Max": 1.0,
+          "Accurate": null
+        },
+        {
+          "Name": "B",
+          "TagAddress": null,
+          "Min": 0.0,
+          "Max": 1.0,
+          "Accurate": "True"
+        },
+        {
+          "Name": "C",
+          "TagAddress": null,
+          "Min": 0.0,
+          "Max": 1.0,
+          "Accurate": "True"
+        }
+      ]
+    },
+    {
+      "Area": "2#",
+      "Tolerances": [
+        {
+          "Name": "D",
+          "TagAddress": null,
+          "Min": 0.0,
+          "Max": 1.0,
+          "Accurate": null
+        },
+        {
+          "Name": "E",
+          "TagAddress": null,
+          "Min": 0.0,
+          "Max": 1.0,
+          "Accurate": "True"
+        }
+      ]
+    }
+  ],
+  "Result": null
+}
