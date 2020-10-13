@@ -72,13 +72,13 @@ namespace KanBanDataService
             };
 
             // 获取Queue值
-            data.Add(("Queue", realData.Queue_Count));
+            data.Add(("Queue", realData.Queue_Count + tagConfigs.GetDetailValue("Queue")));
             // 获取LocalBank值
-            data.Add(("LocalBank", realData.Local_Bank));
+            data.Add(("LocalBank", realData.Local_Bank + tagConfigs.GetDetailValue("LocalBank")));
             // 获取WIP值
-            data.Add(("WIP", new DBHelper().GetWIPCount()));
+            data.Add(("WIP", new DBHelper().GetWIPCount() + tagConfigs.GetDetailValue("WIP")));
             // 获取OEMBank值
-            data.Add(("OEMBank", realData.OEM_Bank));
+            data.Add(("OEMBank", realData.OEM_Bank + tagConfigs.GetDetailValue("OEMBank")));
 
             var dt = shiftConfig.CalcDT(DateTime.Now);
             var rebuildCount = new DBHelper().GetRebuildCount(dt);
@@ -88,16 +88,16 @@ namespace KanBanDataService
             // 获取FTT值
             if (workOrderCount != 0)
             {
-                data.Add(("FTT", Convert.ToInt32(((decimal)workOrderCount - (decimal)repairCount) * 100 / (decimal)workOrderCount)));
+                data.Add(("FTT", Convert.ToInt32(((decimal)workOrderCount - (decimal)repairCount) * 100 / (decimal)workOrderCount) + tagConfigs.GetDetailValue("FTT")));
             }
             else
             {
                 data.Add(("FTT", 0));
             }
             // 获取Repairs值
-            data.Add(("Repairs", repairCount));
+            data.Add(("Repairs", repairCount + tagConfigs.GetDetailValue("Repairs")));
             // 获取Rebuild值
-            data.Add(("Rebuild", rebuildCount));
+            data.Add(("Rebuild", rebuildCount + tagConfigs.GetDetailValue("Rebuild")));
 
 
             data.ForEach(o =>
@@ -117,10 +117,10 @@ namespace KanBanDataService
                 {
                     continue;
                 }
-                ua.AsyncWrite(new WriteDataValue
+                var result = ua.Write(new WriteDataValue
                 {
                     NodeId = NodeId.Parse(address.TagAddress),
-                    Value = d.value,
+                    Value = (int)d.value,
                 });
             }
         }

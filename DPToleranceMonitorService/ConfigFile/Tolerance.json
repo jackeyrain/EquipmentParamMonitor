@@ -163,6 +163,6 @@
   },
   "Ack": {
     "TagAddress": "ns=2;s=DR_RR_LH_UPPER_SUB_ASSY.DR_RR_LH_UPPER_SUB_ASSY.Global.InterfaceFromMES.MachineResetACK",
-    "Value": true
+    "Value": 1
   }
 }

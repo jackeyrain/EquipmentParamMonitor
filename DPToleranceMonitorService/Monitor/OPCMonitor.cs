@@ -8,7 +8,7 @@ using UnifiedAutomation.UaBase;
 
 namespace DPToleranceMonitorService.Monitor
 {
-    public class OPCMonitor
+    public partial class OPCMonitor
     {
         private string URI = string.Empty;
         private Jakware.UaClient.JakwareUaClient jakwareUaClient = null;
@@ -42,25 +42,13 @@ namespace DPToleranceMonitorService.Monitor
             foreach (var item in e.JakwareDataChanges)
             {
                 // 写入队列组
-                _toleranceEntities.Where(o => o.TagAddress.Equals(item.MonitoredItem.NodeId.ToString()))
-                    .ToList()
-                    .ForEach(o => { o.Value = item.Value; });
-
-                // 得到就绪信号
-                if (item.MonitoredItem.NodeId.ToString().Equals(ToleranceInstance.Require.TagAddress, StringComparison.OrdinalIgnoreCase))
-                {
-                    if (item.Value.Equals(ToleranceInstance.Require.Value))
-                    {
-                        if (ToleranceInstance.CheckTolerance())
-                        {
-                            // 成功
-                        }
-                        else
-                        {
-                            // 失败
-                        }
-                    }
-                }
+                var toleranceSet = _toleranceEntities.Where(o => o.TagAddress.Equals(item.MonitoredItem.NodeId.ToString())).ToList();
+                // 在参数列表中找到了，直接赋值
+                if (toleranceSet.Count() > 0)
+                    toleranceSet.ForEach(o => { o.Value = item.Value; });
+                // 如果没找到，执行接收命令
+                else
+                    this.Command(item);
             }
         }
 

@@ -111,6 +111,6 @@ namespace DPToleranceMonitorService.Model
     public class Ack
     {
         public string TagAddress { get; set; }
-        public bool Value { get; set; }
+        public int Value { get; set; }
     }
 }

@@ -99,6 +99,7 @@
     <Compile Include="Model\ToleranceInstance.cs" />
     <Compile Include="Model\ToleranceEntity.cs" />
     <Compile Include="Monitor\OPCMonitor.cs" />
+    <Compile Include="Monitor\OPCMonitorEvent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

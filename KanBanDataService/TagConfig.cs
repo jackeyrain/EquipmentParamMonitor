@@ -46,4 +46,17 @@ namespace KanBanDataService
             return $"{Categary} - {TagAddress} - {Detal}";
         }
     }
+
+    public static class TagConfigExtend
+    {
+        public static decimal GetDetailValue(this List<TagConfig> source, string categary)
+        {
+            var tagConfig = source.Find(o => o.Categary.Equals(categary, StringComparison.OrdinalIgnoreCase));
+            if (tagConfig == null)
+            {
+                return 0;
+            }
+            return tagConfig.Detal;
+        }
+    }
 }
