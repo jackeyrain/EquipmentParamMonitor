@@ -70,7 +70,7 @@ namespace ShipperToQAD
         {
             // 获取已完成未同步装车单
             var loadings = fsql.GetRepository<LOADING_LIST>()
-                .Where(o => o.STATUS == 40 &&
+                .Where(o => o.STATUS == 40 && o.VALID_FLAG &&
                     (string.IsNullOrEmpty(o.REMARK)
                         // || o.REMARK.Equals("ESB_FAIL", StringComparison.OrdinalIgnoreCase)
                         || o.REMARK.Equals("ESB_RESEND", StringComparison.OrdinalIgnoreCase)))
