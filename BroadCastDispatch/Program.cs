@@ -20,6 +20,10 @@ namespace BroadCastDispatch
                 {
                     Implement(broadcastSections);
                 }
+                catch (FormatException)
+                {
+                    return;
+                }
                 catch (Exception ex)
                 {
                     Log(ex.Message, LogLevel.ERROR);
@@ -42,15 +46,15 @@ namespace BroadCastDispatch
                 }
 
                 Log($"Start to {o.BroadcastType} dispatch...", LogLevel.WARNING);
-                var files = Directory.GetFiles(o.Source);
+                var files = Directory.GetFiles(o.Source, "*.txt");
                 Log($"There are {files.Length} files...", LogLevel.LOG);
                 var fileInfos = Array.ConvertAll(files, f => new FileInfo(f));
                 var valFileInfos = fileInfos.OrderBy(fi => fi.CreationTime).ToList();
                 Log($"There are {valFileInfos.Count} available files...", LogLevel.LOG);
                 foreach (var fi in valFileInfos)
                 {
-                    // 获取文件后，delay 5s，确保文件写入完成
-                    Thread.Sleep(5 * 1000);
+                    // 获取文件后，delay 3s，确保文件写入完成
+                    Thread.Sleep(3 * 1000);
                     var content = File.ReadAllText(fi.FullName);
                     var key = content.Substring(10, 2).Trim();
                     if (!o.BroadcastType.Equals(key, StringComparison.OrdinalIgnoreCase))
@@ -58,6 +62,28 @@ namespace BroadCastDispatch
                         Log($"{fi.FullName} doesn't match...", LogLevel.WARNING);
                         continue;
                     }
+                    // 如果是G点报文，判断文件长度是否满足需求
+                    if (o.BroadcastType.Equals("G", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string partsContent = content.Substring(53, content.Length - 53);
+                        List<string> partSet = new List<string>();
+                        for (int i = 0; i < partsContent.Length;)
+                        {
+                            partSet.Add(partsContent.Substring(i, 12));
+                            i += 12;
+                        }
+                        if (partSet.Count != 31)
+                        {
+                            new MailHelper().Send("Jelisoft PAB ERROR.", $"<h1><b>{fi.Name} doesn't match the count of operation.<br />When you correct it, open the transfer application again.</b></h1>", System.Net.Mail.MailPriority.High);
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"{fi.FullName} doesn't match the count of operation.");
+                            Console.WriteLine($"When you correct it, open the transfer application again.");
+                            Console.ReadKey(false);
+                            Console.ResetColor();
+                            throw new FormatException();
+                        }
+                    }
+
                     try
                     {
                         Log($"{fi.Name} move to {o.Dispatch} done...", LogLevel.LOG);
