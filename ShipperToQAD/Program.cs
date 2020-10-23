@@ -116,7 +116,7 @@ namespace ShipperToQAD
                         {
                             SERL_NBR_TYPE = "PRT", // RCK IS THE VALUE OF THE SERIAL TYPE LEVEL 1
                             SERL_NBR = detail.ID.ToString(), // INTERNAL IPC SERIAL, WILL NOT BE TRANSFERRED TO QAD. what's this field's meaning.
-                            SERL_QTY = detail.ACTUAL_QTY.ToString(), // QTY OF ITEM BASED ON THE VIN DETAIL
+                            SERL_QTY = detail.PLAN_QTY.ToString(), // QTY OF ITEM BASED ON THE VIN DETAIL
                             LIN_CUST_ITEM = detail.CUST_PART_NO, // CUSTOMER ITEM IN THE BROADCAST
                             LIN_VIN = detail.LZ_VIN_CODE, // modelYear.VEHICLE_CATEGORY_CODE + opcs.VIN, // VIN DETAIL ON THE BROADCAST. 
 
@@ -138,7 +138,7 @@ namespace ShipperToQAD
                             {
                                 SERL_NBR_TYPE = "PRT", // RCK IS THE VALUE OF THE SERIAL TYPE LEVEL 1
                                 SERL_NBR = detail.ID.ToString(), // INTERNAL IPC SERIAL, WILL NOT BE TRANSFERRED TO QAD. what's this field's meaning.
-                                SERL_QTY = detail.ACTUAL_QTY.ToString(), // QTY OF ITEM BASED ON THE VIN DETAIL
+                                SERL_QTY = detail.PLAN_QTY.ToString(), // QTY OF ITEM BASED ON THE VIN DETAIL
                                 LIN_CUST_ITEM = LaborPartNumber, // CUSTOMER ITEM IN THE BROADCAST
                                 LIN_VIN = detail.LZ_VIN_CODE, // modelYear.VEHICLE_CATEGORY_CODE + opcs.VIN, // VIN DETAIL ON THE BROADCAST. 
 

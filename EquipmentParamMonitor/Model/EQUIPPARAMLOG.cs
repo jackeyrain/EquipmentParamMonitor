@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EquipmentParamMonitor.Model
 {
-    [SugarTable("EQUIPPARAMLOG")]
+    [SugarTable("MES.EQUIPPARAMLOG")]
     public class EQUIPPARAMLOG
     {
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
