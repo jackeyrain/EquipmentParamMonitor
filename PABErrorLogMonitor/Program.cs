@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PABErrorLogMonitor
 {
@@ -42,12 +39,12 @@ namespace PABErrorLogMonitor
                 Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}");
                 var currentValue = message.Substring(0, 14);
 
-                var error_code = freeSql.Select<MES_TS_SYS_CII_ERROR_CODE>()
+                var error_code = freeSql.Select<MES_TS_SYS_SAP_ERROR_CODE>()
                     .Where(o => o.ERROR_CODE.Equals("PAB", StringComparison.OrdinalIgnoreCase)).ToList().FirstOrDefault() ??
-                    new MES_TS_SYS_CII_ERROR_CODE
+                    new MES_TS_SYS_SAP_ERROR_CODE
                     {
                         ERROR_CODE = "PAB",
-                        ALLOW_RESEND = 0,
+                        ALLOW_RESEND = false,
                         REMARK = string.Empty,
                         PLANT = "HLP",
                         VALID_FLAG = false,
@@ -68,7 +65,8 @@ namespace PABErrorLogMonitor
                     if (preCount < opcs_count)
                     {
                         error_code.REMARK = string.Empty;
-                        freeSql.InsertOrUpdate<MES_TS_SYS_CII_ERROR_CODE>().SetSource(error_code).ExecuteAffrows();
+                        error_code.VALID_FLAG = false;
+                        freeSql.InsertOrUpdate<MES_TS_SYS_SAP_ERROR_CODE>().SetSource(error_code).ExecuteAffrows();
                         Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} Cancel Last Error.");
                     }
                     else
@@ -80,7 +78,8 @@ namespace PABErrorLogMonitor
                 {
                     // 不相同，直接报警
                     error_code.REMARK = "ERROR";
-                    freeSql.InsertOrUpdate<MES_TS_SYS_CII_ERROR_CODE>().SetSource(error_code).ExecuteAffrows();
+                    error_code.VALID_FLAG = true;
+                    freeSql.InsertOrUpdate<MES_TS_SYS_SAP_ERROR_CODE>().SetSource(error_code).ExecuteAffrows();
                     Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} Create New Error.");
                     preValue = currentValue;
                     new MailHelper().Send("PAB ERROR", message, System.Net.Mail.MailPriority.High);

@@ -112,16 +112,19 @@ namespace KanBanDataService
         {
             foreach (var d in data)
             {
-                var address = tagConfigs.FirstOrDefault(o => o.Categary.Equals(d.name, StringComparison.OrdinalIgnoreCase));
-                if (string.IsNullOrEmpty(address.TagAddress))
+                var addressSet = tagConfigs.Where(o => o.Categary.Equals(d.name, StringComparison.OrdinalIgnoreCase));
+                foreach (var address in addressSet)
                 {
-                    continue;
+                    if (string.IsNullOrEmpty(address.TagAddress))
+                    {
+                        continue;
+                    }
+                    var result = ua.Write(new WriteDataValue
+                    {
+                        NodeId = NodeId.Parse(address.TagAddress),
+                        Value = (int)d.value,
+                    });
                 }
-                var result = ua.Write(new WriteDataValue
-                {
-                    NodeId = NodeId.Parse(address.TagAddress),
-                    Value = (int)d.value,
-                });
             }
         }
     }
