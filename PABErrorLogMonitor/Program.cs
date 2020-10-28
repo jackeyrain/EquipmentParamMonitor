@@ -12,6 +12,10 @@ namespace PABErrorLogMonitor
         static void Main(string[] args)
         {
             var path = ConfigurationManager.AppSettings["path"];
+            if (!Directory.Exists("temp"))
+            {
+                Directory.CreateDirectory("temp");
+            }
             var preValue = string.Empty;
             long preCount = 0;
 
@@ -34,7 +38,8 @@ namespace PABErrorLogMonitor
                     fileInfos.Add(new FileInfo(file));
                 }
                 var lastInfo = fileInfos.OrderByDescending(o => o.LastWriteTime).First();
-                var content = File.ReadLines(lastInfo.FullName);
+                lastInfo.CopyTo(Path.Combine("temp", lastInfo.Name), true);
+                var content = File.ReadLines(Path.Combine("temp", lastInfo.Name));
                 var message = content.Last();
                 Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}");
                 var currentValue = message.Substring(0, 14);
@@ -82,7 +87,7 @@ namespace PABErrorLogMonitor
                     freeSql.InsertOrUpdate<MES_TS_SYS_SAP_ERROR_CODE>().SetSource(error_code).ExecuteAffrows();
                     Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} Create New Error.");
                     preValue = currentValue;
-                    new MailHelper().Send("PAB ERROR", message, System.Net.Mail.MailPriority.High);
+                    new MailHelper().Send("PFCS ALERT", message, System.Net.Mail.MailPriority.High);
                 }
                 preCount = opcs_count;
 
