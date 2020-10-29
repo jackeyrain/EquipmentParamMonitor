@@ -24,6 +24,18 @@ namespace BroadCastDispatch
                     message.To.Add(address);
             }
         }
+        public MailHelper(string receiveAddress)
+        {
+            mail.Port = int.Parse(ConfigurationManager.AppSettings["PORT"]);
+            mail.Host = ConfigurationManager.AppSettings["HOST"];
+            mail.UseDefaultCredentials = true;
+            message.From = new MailAddress(ConfigurationManager.AppSettings["FROM"]);
+            foreach (var address in receiveAddress.Split(new[] { ';' }))
+            {
+                if (!string.IsNullOrEmpty(address))
+                    message.To.Add(address);
+            }
+        }
 
         public bool Send(string subject, string body, MailPriority mailPriority = MailPriority.Normal)
         {

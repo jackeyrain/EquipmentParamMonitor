@@ -1,9 +1,13 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BroadCastDispatch
 {
@@ -13,6 +17,8 @@ namespace BroadCastDispatch
         {
             var broadcastSections = ConfigurationManager.GetSection("Broadcast") as List<Broadcast>;
             Log("Applicaton is start...");
+
+            Monitor(broadcastSections);
 
             while (true)
             {
@@ -33,6 +39,43 @@ namespace BroadCastDispatch
                     Thread.Sleep(5000);
                 }
             }
+        }
+
+        private static async void Monitor(List<Broadcast> broadcasts)
+        {
+            await new TaskFactory().StartNew(async () =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        StringBuilder message = new StringBuilder();
+                        broadcasts.ForEach(o =>
+                        {
+                            var files = Directory.GetFiles(o.Source, "*.txt");
+                            var fileInfos = new List<FileInfo>();
+                            if (files.Length > 0)
+                            {
+                                fileInfos.AddRange(Array.ConvertAll(files, p => new FileInfo(p)).ToArray());
+                                var last = fileInfos.OrderByDescending(p => p.CreationTime).FirstOrDefault();
+                                if ((DateTime.Now - last.CreationTime).Minutes > 5)
+                                {
+                                    message.AppendLine($"{last.FullName} doesn't parse.");
+                                }
+                            }
+                        });
+                        if (!string.IsNullOrWhiteSpace(message.ToString()))
+                        {
+                            new MailHelper("liuxiao@yizit.cn;jibo@yizit.cn;shenmq@yizit.cn;lingyh@yizit.cn;yi.yu-ext@yfai.com;jie.zhou03@yfai.com;gang.lv@yfai.com")
+                            .Send("报文卡住啦！！！！！！", message.ToString(), System.Net.Mail.MailPriority.High);
+                        }
+                    }
+                    finally
+                    {
+                        await Task.Delay(300 * 1000);
+                    }
+                }
+            });
         }
 
         private static void Implement(List<Broadcast> broadcasts)
