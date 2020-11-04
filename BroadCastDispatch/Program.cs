@@ -57,7 +57,7 @@ namespace BroadCastDispatch
                             if (files.Length > 0)
                             {
                                 fileInfos.AddRange(Array.ConvertAll(files, p => new FileInfo(p)).ToArray());
-                                var last = fileInfos.OrderByDescending(p => p.CreationTime).FirstOrDefault();
+                                var last = fileInfos.OrderBy(p => p.CreationTime).FirstOrDefault();
                                 if ((DateTime.Now - last.CreationTime).Minutes > 5)
                                 {
                                     message.AppendLine($"{last.FullName} doesn't parse.");
