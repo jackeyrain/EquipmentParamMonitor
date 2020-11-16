@@ -1,0 +1,155 @@
+﻿update MES.TP_Equipmentvariable set [Data Type] = 1 where [Data Type] = 'Byte Array';
+
+update MES.TP_Equipmentvariable set [Data Type] = 2 where [Data Type] = 'Word';
+
+update MES.TP_Equipmentvariable set [Data Type] = 3 where [Data Type] = 'Boolean';
+
+update MES.TP_Equipmentvariable set [Data Type] = 4 where [Data Type] = 'Long';
+
+update MES.TP_Equipmentvariable set [Data Type] = 5 where [Data Type] = 'String';
+
+update MES.TP_Equipmentvariable set [Data Type] = 1 where [Data Type] = 'Byte';
+
+update MES.TP_Equipmentvariable set [Data Type] = 5 where [Data Type] = 'DWord';
+
+update MES.TP_Equipmentvariable set [Data Type] = 5 where [Data Type] not in('Byte Array','Word','Boolean','Long','String','Byte','DWord','1','2','3','4','5');
+
+update MES.TP_Equipmentvariable set [Client Access] = 1 where [Client Access] = 'RO';
+
+update MES.TP_Equipmentvariable set [Client Access] = 2 where [Client Access] = 'R/W';
+
+--1 只读，2 可读可写
+
+declare
+
+@Equip int , --设备 select * from mes.TM_BAS_EQUIPMENT
+
+@clienthandle int , --该字段最大值+1
+
+@Name nvarchar(128), --Tag Name
+
+@code nvarchar(128), --Address
+
+@Desc nvarchar(128), --Desciption
+
+@Datatype nvarchar(128), --1 Byte,2 Word,3 Boolean,4 Long,5 String
+
+@Scaninterval int,--扫描间隔 scanrate
+
+@Readwrite int, --1 只读，2 可读可写
+
+@num int,
+
+@typeid int = 1, --A2F8449E-146A-412A-8735-6B1D27F749A2工艺 7083F6F6-CBC6-45D8-8994-0216428DFEC9--生产
+
+@equfid UNIQUEIDENTIFIER
+
+UPDATE MES.TP_Equipmentvariable SET [Raw Low] = NULL --WHERE [Raw Low] = ''
+
+SET @num = (select COUNT(1) from  MES.TP_Equipmentvariable where [Raw Low] is null)
+
+ 
+
+while @num>0
+
+begin
+
+set @Equip = {{EQUIP}} --设备 select * from mes.TM_BAS_EQUIPMENT 查出该设备ID
+
+SET @equfid = (SELECT fid FROM mes.TM_BAS_EQUIPMENT WHERE id = @Equip)
+
+set @clienthandle = (select max(CLIENT_HANDLE)
+
+from mes.TM_BAS_EQUIPMENT_VARIABLE where VALID_FLAG = 1 )
+
+if @clienthandle is null
+
+begin
+
+set @clienthandle = 0
+
+end
+
+set @clienthandle = @clienthandle +1--最大+1
+
+set @Name = (select top 1 [Tag Name] from MES.TP_Equipmentvariable where [Raw Low] is null )
+
+if @Name is null
+
+begin
+
+set @Name = ''
+
+end--Tag Name
+
+set @code = (select [Address] from MES.TP_Equipmentvariable where [Tag Name]= @Name)
+
+if @code is null
+
+begin
+
+set @code = ''
+
+end--Address
+
+set @Desc = (select [Description] from MES.TP_Equipmentvariable where [Tag Name]= @Name)
+
+if @Desc is null
+
+begin
+
+set @Desc = ''
+
+end--Desciption
+
+set @Datatype = (select [Data Type] from MES.TP_Equipmentvariable where [Tag Name]= @Name)
+
+if @Desc is null
+
+begin
+
+set @Desc = ''
+
+end
+
+--1 Byte,2 Word,3 Boolean,4 Long,5 String
+
+set @Scaninterval = (select [Scan Rate] from MES.TP_Equipmentvariable where [Tag Name]= @Name)
+
+if @Scaninterval is null
+
+begin
+
+set @Scaninterval = ''
+
+end--扫描间隔 scanrate
+
+set @Readwrite = (select [Client Access] from MES.TP_Equipmentvariable where [Tag Name]= @Name)
+
+if @Readwrite is null
+
+begin
+
+set @Readwrite = ''
+
+end--1 只读，2 可读可写
+
+ 
+
+insert into mes.TM_BAS_EQUIPMENT_VARIABLE
+
+( EQUIP_ID, CLIENT_HANDLE, Name,
+
+Code, Description,  DATA_TYPE,
+
+  SCAN_INTERVAL, READ_WRITE
+
+  , VALID_FLAG, CREATE_DATE, CREATE_USER,UPDATE_DATE,UPDATE_USER,VARIABLE_TYPE,EQUIP_FID,FID)
+
+values (@Equip,@clienthandle,@Name,
+
+@code,@Desc,@Datatype,@Scaninterval,@Readwrite,1,GETDATE(),'admin',GETDATE(),'admin',@typeid,@equfid,NEWID())
+
+update MES.TP_Equipmentvariable set [Raw Low] = 1 where [Tag Name] = @Name
+set @num = @num -1
+END
