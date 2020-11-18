@@ -90,7 +90,7 @@ namespace WindowsFormsApp1
                 {
                     if (row.Cells["QTY"].Value.ToString().Equals("18") &&
                        row.Cells["DELT"].Value.ToString().Equals("18") &&
-                       row.Cells["COUNT"].Value.ToString().Equals("36"))
+                       int.Parse(row.Cells["COUNT"].Value.ToString()) >= 36)
                     {
                         row.DefaultCellStyle.BackColor = Color.GreenYellow;
                     }
@@ -104,7 +104,7 @@ namespace WindowsFormsApp1
                 {
                     if (row.Cells["QTY"].Value.ToString().Equals("18") &&
                        row.Cells["DELT"].Value.ToString().Equals("18") &&
-                       row.Cells["COUNT"].Value.ToString().Equals("36"))
+                       int.Parse(row.Cells["COUNT"].Value.ToString()) >= 36)
                     {
                         row.DefaultCellStyle.BackColor = Color.GreenYellow;
                     }
