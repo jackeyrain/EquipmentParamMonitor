@@ -88,9 +88,9 @@ namespace WindowsFormsApp1
                 }
                 else if (row.Cells[0].Value.ToString().Equals("LEFT DP SHIPPING", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (row.Cells["QTY"].Value.ToString().Equals("18") &&
-                       row.Cells["DELT"].Value.ToString().Equals("18") &&
-                       int.Parse(row.Cells["COUNT"].Value.ToString()) >= 36)
+                    if (row.Cells["QTY"].Value.ToString().Equals("15") &&
+                       row.Cells["DELT"].Value.ToString().Equals("15") &&
+                       int.Parse(row.Cells["COUNT"].Value.ToString()) >= 30)
                     {
                         row.DefaultCellStyle.BackColor = Color.GreenYellow;
                     }
@@ -102,9 +102,9 @@ namespace WindowsFormsApp1
                 }
                 else if (row.Cells[0].Value.ToString().Equals("RIGHT DP SHIPPING", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (row.Cells["QTY"].Value.ToString().Equals("18") &&
-                       row.Cells["DELT"].Value.ToString().Equals("18") &&
-                       int.Parse(row.Cells["COUNT"].Value.ToString()) >= 36)
+                    if (row.Cells["QTY"].Value.ToString().Equals("15") &&
+                       row.Cells["DELT"].Value.ToString().Equals("15") &&
+                       int.Parse(row.Cells["COUNT"].Value.ToString()) >= 30)
                     {
                         row.DefaultCellStyle.BackColor = Color.GreenYellow;
                     }
@@ -171,6 +171,11 @@ namespace WindowsFormsApp1
             {
                 MessageBox.Show(this, "快点来看！快点来看！快点来看！", "有问题快修！", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            timer1_Tick(sender, e);
         }
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UnifiedAutomation.UaBase;
 
 namespace DPToleranceMonitorService.Monitor
@@ -13,6 +14,7 @@ namespace DPToleranceMonitorService.Monitor
         private string URI = string.Empty;
         private Jakware.UaClient.JakwareUaClient jakwareUaClient = null;
         private CancellationTokenSource cts;
+        private CancellationTokenSource monitorCts;
         public MonitorStatus MonitorStatus { get; set; }
         public ToleranceInstance ToleranceInstance;
         private List<ToleranceEntity> _toleranceEntities;
@@ -60,8 +62,10 @@ namespace DPToleranceMonitorService.Monitor
             jakwareUaClient.Connect();
             jakwareUaClient.StartSubscription();
 
-            var nodeIds = Array.ConvertAll(_toleranceEntities.ToArray(), o => NodeId.Parse(o.TagAddress));
-            jakwareUaClient.AddMonitorNodeId(nodeIds);
+            List<NodeId> nodeIdSet = new List<NodeId>();
+            nodeIdSet.AddRange(Array.ConvertAll(_toleranceEntities.ToArray(), o => NodeId.Parse(o.TagAddress)));
+            nodeIdSet.Add(NodeId.Parse(ToleranceInstance.Require.TagAddress));
+            jakwareUaClient.AddMonitorNodeId(nodeIdSet.ToArray());
         }
         public void Stop()
         {
@@ -70,6 +74,29 @@ namespace DPToleranceMonitorService.Monitor
         public void Show(string area = "")
         {
             ToleranceInstance.Show(area);
+        }
+
+        public async void Monitor(int left, int top, string area)
+        {
+            monitorCts = new CancellationTokenSource();
+            monitorCts.Token.Register(() => Console.WriteLine("Monitor is stoped."));
+            await new TaskFactory().StartNew(async () =>
+            {
+                while (!monitorCts.Token.IsCancellationRequested)
+                {
+                    Console.SetCursorPosition(left, top);
+                    if (!ToleranceInstance.Show(area))
+                    {
+                        monitorCts.Cancel();
+                    }
+                    await Task.Delay(1000);
+                }
+            });
+        }
+
+        public void StopMonitor()
+        {
+            monitorCts?.Cancel();
         }
 
         internal void AreaList()

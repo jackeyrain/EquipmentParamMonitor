@@ -1,11 +1,6 @@
 ﻿using DPToleranceMonitorService.Enum;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DPToleranceMonitorService.Model
 {
@@ -54,7 +49,7 @@ namespace DPToleranceMonitorService.Model
             }
             return true;
         }
-        public void Show(string area = "")
+        public bool Show(string area = "")
         {
             Console.ForegroundColor = ConsoleColor.Green;
             if (string.IsNullOrWhiteSpace(area))
@@ -63,13 +58,16 @@ namespace DPToleranceMonitorService.Model
                 {
                     Console.WriteLine(o.ToString());
                 });
+                Console.ResetColor();
+                return true;
             }
             else
             {
                 var data = Array.Find(Data, o => o.Area.Equals(area, StringComparison.OrdinalIgnoreCase));
                 Console.WriteLine(data?.ToString() ?? $"{area} doesn't exist.");
+                Console.ResetColor();
+                return !(data is null);
             }
-            Console.ResetColor();
         }
     }
     public class Data
@@ -78,10 +76,11 @@ namespace DPToleranceMonitorService.Model
         public ToleranceEntity[] Tolerances { get; set; }
         public override string ToString()
         {
+            var length = Console.WindowWidth;
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine("".PadRight(160, '='));
+            builder.AppendLine("".PadRight(length, '='));
             builder.AppendLine(Area);
-            builder.AppendLine("".PadRight(160, '-'));
+            builder.AppendLine("".PadRight(length, '-'));
 
             for (int i = 1; i <= Tolerances.Length; i++)
             {
@@ -94,7 +93,7 @@ namespace DPToleranceMonitorService.Model
             }
             builder.Append(Environment.NewLine);
 
-            builder.AppendLine("".PadRight(160, '='));
+            builder.AppendLine("".PadRight(length, '='));
             return builder.ToString();
         }
     }

@@ -1,5 +1,4 @@
-﻿using DPToleranceMonitorService.Enum;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace DPToleranceMonitorService.Model
 {
