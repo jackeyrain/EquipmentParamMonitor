@@ -9,10 +9,14 @@ namespace DPToolingService
 {
     class Program
     {
-        private IFreeSql freeSql = null;
         static void Main(string[] args)
         {
-            var orderTags = ConfigurationManager.GetSection("OrderTagAddress") as OrderTagAddress;
+            LogHelper.Log.LogInfo("Tooling service is starting.", LogHelper.LogType.Information);
+
+            var orderTags = ConfigurationManager.GetSection("OrderTagHelper") as OrderTagHelper;
+
+            var orderQueue = new OrderQueue(orderTags.OrderTags);
+            orderQueue.GetWorkOrderBuffer();
         }
     }
 }
