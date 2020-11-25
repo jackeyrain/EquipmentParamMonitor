@@ -125,7 +125,7 @@ namespace WindowsFormsApp1
                     if (int.Parse(dataGridView1.Rows[i + 1].Cells["FROM"].Value.ToString()) -
                         int.Parse(dataGridView1.Rows[i].Cells["TO"].Value.ToString()) == 10)
                     {
-                        dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.GreenYellow;
+                        // dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.GreenYellow;
                     }
                     else
                     {
@@ -141,7 +141,7 @@ namespace WindowsFormsApp1
                     if (int.Parse(dataGridView1.Rows[i + 1].Cells["FROM"].Value.ToString()) -
                         int.Parse(dataGridView1.Rows[i].Cells["TO"].Value.ToString()) == 10)
                     {
-                        dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.GreenYellow;
+                        // dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.GreenYellow;
                     }
                     else
                     {
@@ -157,7 +157,7 @@ namespace WindowsFormsApp1
                     if (int.Parse(dataGridView1.Rows[i + 1].Cells["FROM"].Value.ToString()) -
                         int.Parse(dataGridView1.Rows[i].Cells["TO"].Value.ToString()) == 10)
                     {
-                        dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.GreenYellow;
+                        // dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.GreenYellow;
                     }
                     else
                     {
