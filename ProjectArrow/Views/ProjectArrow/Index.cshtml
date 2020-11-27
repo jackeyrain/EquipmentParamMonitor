@@ -1,0 +1,111 @@
+﻿@using ProjectArrow.Entity;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Project Arrow</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-3.5.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <style>
+        .grap {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body style="margin:16px">
+    <div>
+        <div class="dropdown">
+            <select id="stationList" class="form-control form-control-sm">
+                @if (ViewBag.Lines != null)
+                {
+                    foreach (SelectEntity line in ViewBag.Lines)
+                    {
+                        <option value="@line.Value">@line.Name</option>
+                    }
+                }
+            </select>
+            <div class="list-group grap" id="Task">
+                <button type="button" class="list-group-item list-group-item-action active">
+                    Project Arrow Task
+                </button>
+                @for (int i = 0; i < 6; i++)
+                {
+                    <button type="button" class="list-group-item list-group-item-action task">No TASK</button>
+                }
+
+            </div>
+            <button type="button" class="btn btn-primary btn-sm btn-block grap">Primary</button>
+        </div>
+    </div>
+    <button id="btnConfirm" type="button" class="btn btn-primary" style="display:none" data-toggle="modal" data-target="#exampleModal"></button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-message">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmFun()">Confirm</button>
+                </div>
+                <input id="TaskID" type="hidden" />
+            </div>
+        </div>
+        <script>
+            function confirmFun() {
+                console.log($('#TaskID').val());
+                window.location = 'ProjectArrow/ArrowDo?id=' + $('#TaskID').val();
+            }
+        </script>
+    </div>
+    <script>
+        $(document).ready(function () {
+
+            $("#stationList").change(function () {
+                var checkValue = $("#stationList").val();
+                $.ajax({
+                    url: "@Url.Action("GetArrowTask")",
+                    type: "GET",
+                    contentType: "json",
+                    data: { 'assemblyLine': checkValue },
+                    success: function (data) {
+                        $("#Task button.task").remove();
+                        for (var i = 0; i < 6; i++){
+                            if(data[i])
+                                $("#Task").append('<button type="button" class="list-group-item list-group-item-action task"  data-id="'+data[i].Id+'" data-partno="'+data[i].PartNo+'" data-partname="'+data[i].PartName+'">' + data[i].Order+'</button>');
+                            else
+                                $("#Task").append('<button type="button" class="list-group-item list-group-item-action task">No TASK</button>');
+                        }
+                        $("#Task button.task").click(function (e, el) {
+                            var target = $(e.currentTarget);
+                            if (!target.attr("data-id")) return;
+                            var tmpl = `Current selected order is ${target.html()} <br/> \
+                                        Product PartNo is ${target.attr('data-partno')}-${target.attr('data-partname')}`;
+                            $('#modal-message').html(tmpl);
+                            $('#TaskID').val(target.attr('data-id'));
+                            $('#btnConfirm').click();
+                        })
+                    },
+                    error: function (e) {
+                        console.log(e.status);
+                        console.log(e.responseText);
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

@@ -14,7 +14,13 @@ namespace DPToolingService
         public OrderTagHelper()
         {
             OrderTags = new List<OrderTag>();
+            GroupSet = new List<MES_TM_BAS_PART_PRODUCT_GROUP>();
+            MonitorStationSet = new List<string>();
+            TargetStationSet = new List<string>();
         }
+        public static List<MES_TM_BAS_PART_PRODUCT_GROUP> GroupSet { get; set; }
+        public static List<string> MonitorStationSet { get; set; }
+        public static List<string> TargetStationSet { get; set; }
 
         public OrderTag this[int index]
         {
@@ -28,17 +34,21 @@ namespace DPToolingService
         {
             foreach (XmlNode node in section.ChildNodes)
             {
-                var groupId = DBHelper.DB.Select<MES_TM_BAS_PART_PRODUCT_GROUP>()
-                    .Where(o => o.VALID_FLAG.Value && o.GROUP_CODE.Equals(node.Attributes["ProductGroupCode"].Value)).First()?.ID;
-                if (!groupId.HasValue)
+                var group = DBHelper.DB.Select<MES_TM_BAS_PART_PRODUCT_GROUP>()
+                    .Where(o => o.VALID_FLAG.Value && o.GROUP_CODE.Equals(node.Attributes["ProductGroupCode"].Value)).First();
+                if (group == null)
                     continue;
+                GroupSet.Add(group);
+                MonitorStationSet.Add(node.Attributes["MonitorStation"].Value);
+                TargetStationSet.Add(node.Attributes["TargetStation"].Value);
+
                 OrderTags.Add(new OrderTag
                 {
                     ID = int.Parse(node.Attributes["ID"].Value),
-                    Buffer = int.Parse(node.Attributes["Buffer"].Value),
-                    ProductGroupId = groupId.Value,
+                    ProductGroupId = group.ID,
                     TagAddress = node.Attributes["TagAddress"].Value,
                     MonitorStation = node.Attributes["MonitorStation"].Value,
+                    TargetStation = node.Attributes["TargetStation"].Value,
                     HandShake = node.Attributes["HandShake"].Value,
                 });
             }
@@ -49,10 +59,10 @@ namespace DPToolingService
     public class OrderTag
     {
         public int ID { get; set; }
-        public int Buffer { get; set; }
         public long ProductGroupId { get; set; }
         public string TagAddress { get; set; }
         public string MonitorStation { get; set; }
+        public string TargetStation { get; set; }
         public string HandShake { get; set; }
     }
 }

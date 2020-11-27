@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace DPToolingService
                         {
                             freeSql = new FreeSql.FreeSqlBuilder()
                                 .UseConnectionString(FreeSql.DataType.SqlServer, ConfigurationManager.AppSettings["db_connectionstring"])
-                                 .UseMonitorCommand(null, (o, p) => Console.WriteLine(o.CommandText))
+                                 .UseMonitorCommand(null, (o, p) => Debug.WriteLine(o.CommandText))
                                 .UseAutoSyncStructure(false)
                                 .Build();
                         }
