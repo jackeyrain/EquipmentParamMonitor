@@ -1,16 +1,13 @@
-using FreeSql.DatabaseModel;using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using FreeSql.DataAnnotations;
+using Newtonsoft.Json;
+using System;
 
-namespace ProjectArrow.Entity {
+namespace ProjectArrow.Entity
+{
 
-	[JsonObject(MemberSerialization.OptIn), Table(Name = "MES.ProjectArrow", DisableSyncStructure = true)]
-	public partial class MES_ProjectArrow {
+    [JsonObject(MemberSerialization.OptIn), Table(Name = "MES.ProjectArrow", DisableSyncStructure = true)]
+	public partial class MES_ProjectArrow
+	{
 
 		[JsonProperty, Column(IsPrimary = true, IsIdentity = true)]
 		public long ID { get; set; }
@@ -41,6 +38,9 @@ namespace ProjectArrow.Entity {
 
 		[JsonProperty, Column(StringLength = 50)]
 		public string PARTNUMBER { get; set; }
+
+		[JsonProperty]
+		public Guid? SERIAL_ID { get; set; }
 
 		[JsonProperty, Column(StringLength = 50)]
 		public string STATION { get; set; }

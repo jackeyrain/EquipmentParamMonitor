@@ -21,8 +21,12 @@
 </head>
 <body style="margin:16px">
     <div>
+        <div class="alert alert-primary" role="alert">
+            Please Select Production Line:
+        </div>
         <div class="dropdown">
             <select id="stationList" class="form-control form-control-sm">
+                <option value="">Please Select</option>
                 @if (ViewBag.Lines != null)
                 {
                     foreach (SelectEntity line in ViewBag.Lines)
@@ -41,7 +45,6 @@
                 }
 
             </div>
-            <button type="button" class="btn btn-primary btn-sm btn-block grap">Primary</button>
         </div>
     </div>
     <button id="btnConfirm" type="button" class="btn btn-primary" style="display:none" data-toggle="modal" data-target="#exampleModal"></button>

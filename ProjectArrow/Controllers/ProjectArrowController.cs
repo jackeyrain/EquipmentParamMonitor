@@ -43,5 +43,11 @@ namespace ProjectArrow.Controllers
                 return Redirect(nameof(Index));
             }
         }
+
+        [HttpPost]
+        public JsonResult VerifySerial(string partNumber, string serialNumber, string holeNumber)
+        {
+            return Json(new { result = false });
+        }
     }
 }

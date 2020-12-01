@@ -12,20 +12,23 @@
     <script src="~/Scripts/jquery-3.5.1.min.js"></script>
 </head>
 <body>
-    <img src="~/Resource/Images/Logo.png" />
+    <img src="~/Resource/Images/Logo.png" class="img-fluid"/>
     <div style="padding:16px">
         <form id="formLogin" action="/Home/Login" method="post">
             <div class="form-group">
-                <label for="txtAccount">Email address</label>
+                <label for="txtAccount">Account</label>
                 <input type="text" class="form-control" name="txtAccount" aria-describedby="emailHelp">
             </div>
             <div class="form-group">
                 <label for="txtPassword">Password</label>
                 <input type="password" class="form-control" name="txtPassword">
             </div>
-            <button id="btnSubmit" onclick="this.submit();" class="btn btn-primary btn-block">Submit</button>
+            <button id="btnSubmit" onclick="login()" class="btn btn-primary btn-block">Login In</button>
         </form>
         <script>
+            function login() {
+                $('#formLogin').submit();
+            }
             $(document).ready(function () {
 
                  @if (!string.IsNullOrEmpty(TempData["message"] as string))
