@@ -87,6 +87,7 @@
     <Compile Include="Entity\TM_BAS_PART_PRODUCT_GROUP.cs" />
     <Compile Include="Entity\TT_APS_WORK_ORDER.cs" />
     <Compile Include="Entity\TT_APS_WORK_ORDER_ASSEMBLY.cs" />
+    <Compile Include="ToolHelper\WorkOrderEqualCompare.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

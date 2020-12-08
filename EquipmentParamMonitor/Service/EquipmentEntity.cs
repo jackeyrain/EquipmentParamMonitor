@@ -26,6 +26,10 @@ namespace EquipmentParamMonitor.Service
         private bool logEndable { set; get; }
 
         private CARRIERWORKORDER_INFO carrierInfo;
+
+        private volatile bool EMPTYFLAGRUNNING = false;
+        private string STATION110INSTATION = ConfigurationManager.AppSettings["STATION110INSTATION"];
+        private string EMTPYCARRIERSIGNAL = ConfigurationManager.AppSettings["EMTPYCARRIERSIGNAL"];
         #region
 
         #endregion
@@ -64,6 +68,12 @@ namespace EquipmentParamMonitor.Service
         {
             try
             {
+                if (!string.IsNullOrEmpty(STATION110INSTATION) && !string.IsNullOrEmpty(EMTPYCARRIERSIGNAL))
+                {
+                    var _110_instation = e.JakwareDataChanges.FirstOrDefault(o => o.MonitoredItem.NodeId.ToString().Equals(STATION110INSTATION, StringComparison.OrdinalIgnoreCase));
+                    this.Execute1stStationVerify(_110_instation);
+                }
+
                 var carrier = e.JakwareDataChanges.FirstOrDefault(o =>
                             o.MonitoredItem.NodeId.ToString().Equals(CarrierID.ToString(), StringComparison.OrdinalIgnoreCase));
                 if (carrier != null && carrier.IsGood)
@@ -154,6 +164,62 @@ namespace EquipmentParamMonitor.Service
             {
                 return string.Empty;
             }
+        }
+
+        private async void Execute1stStationVerify(JakwareDataChange jakwareDataChange)
+        {
+            await new TaskFactory().StartNew(() =>
+            {
+                try
+                {
+                    if (EMPTYFLAGRUNNING) return;
+                    EMPTYFLAGRUNNING = true;
+                    if (jakwareDataChange == null) return;
+
+                    if (Convert.ToBoolean(jakwareDataChange.Value.Value))
+                        if (!WOExist())
+                        {
+                            opcClient.Write(new WriteDataValue { NodeId = NodeId.Parse(EMTPYCARRIERSIGNAL), Value = true });
+                        }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Log.LogInfo(ex, LogHelper.LogType.Exception);
+                }
+                finally
+                {
+                    EMPTYFLAGRUNNING = false;
+                }
+            });
+        }
+
+        public bool WOExist()
+        {
+            string sql = $@"SELECT top 1 1 from MES.TT_APS_WORK_ORDER a with(NOLOCK)
+                              INNER join MES.TT_APS_WORK_ORDER_ASSEMBLY b with(NOLOCK) on a.ID = b.ORDER_ID
+                              where(b.LOCATION = 'CP110' and b.STATUS = 0)";
+
+            var conn = APS_WORK_ORDER_MANAGER.Db.Ado;
+            var command = conn.GetCommand(sql, null);
+            try
+            {
+                conn.Open();
+                var result = command.ExecuteScalar();
+                if (result == null || Convert.ToInt32(result) <= 0)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return true;
         }
 
         public void Dispose()

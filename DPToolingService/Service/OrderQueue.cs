@@ -62,11 +62,13 @@ namespace DPToolingService
             else
                 sqlCmd = $@"SELECT a.* From MES.TT_APS_WORK_ORDER a WITH(NOLOCK)
                               inner join MES.TT_PC_PRODUCTION_LOG b WITH(NOLOCK) on a.ORDER_CODE = b.ORDER_CODE
-                              where a.MOULD_VALUE is null and a.VALID_FLAG = 1 and a.PRODUCT_GROUP_ID in ({string.Join(",", groupIdSet.ToArray())}) and b.LOCATION in ('{string.Join("','", OrderTagHelper.MonitorStationSet.ToArray())}') 
-                              ORDER by b.ID ASC";
+                              where a.MOULD_VALUE is null and a.VALID_FLAG = 1 and a.PRODUCT_GROUP_ID in ({string.Join(",", groupIdSet.ToArray())}) and b.LOCATION in ('{string.Join("','", OrderTagHelper.MonitorStationSet.ToArray())}')";
 
             var orders = DBHelper.DB.Select<MES_TT_APS_WORK_ORDER>()
               .WithSql(sqlCmd)
+              .OrderBy(o => o.ORDER_SEQ)
+              .ToList()
+              .Distinct(new ToolHelper.WorkOrderEqualCompare())
               .ToList();
 
             if (orders.Count() <= 0)
@@ -78,7 +80,7 @@ namespace DPToolingService
                 var value = UpdateWorkOrderMouldValue(order, true);
                 if (value > 0)
                 {
-                    var tagEntity = orderTags.FirstOrDefault(o => o.ID == order.PRODUCT_GROUP_ID);
+                    var tagEntity = orderTags.FirstOrDefault(o => o.ProductGroupId == order.PRODUCT_GROUP_ID);
                     OrderSet.Enqueue(new OrderEntity { Value = value, MES_TT_APS_WORK_ORDER = order, OrderTag = tagEntity });
                     LogHelper.Log.LogInfo($"Enqueue {order.ORDER_CODE} success.", LogHelper.LogType.Information);
                 }
@@ -109,7 +111,8 @@ namespace DPToolingService
                               inner join mes.TT_APS_WORK_ORDER_ASSEMBLY b with(NOLOCK) on a.ID = b.ORDER_ID  
                               INNER join MES.TM_BAS_WORK_ORDER_ASSEMBLY_SETTING c with(NOLOCK) on b.SETTING_FID =  c.FID
                               inner join MES.TM_BAS_EQUIP_CMD_PARAMS d with(NOLOCK) on c.FID = d.SOURCE_FID
-                              where a.ORDER_CODE = '{orderCode}' and b.LOCATION in ('{string.Join("', '", OrderTagHelper.TargetStationSet.ToArray())}')";
+                              where a.VALID_FLAG = 1 and b.VALID_FLAG = 1 and c.VALID_FLAG = 1 and d.VALID_FLAG = 1
+                                    and a.ORDER_CODE = '{orderCode}' and b.LOCATION in ('{string.Join("', '", OrderTagHelper.TargetStationSet.ToArray())}')";
             var value = DBHelper.DB.Ado.ExecuteScalar(sqlCmd);
             LogHelper.Log.LogInfo($"Calculate {value}", LogHelper.LogType.Information);
             return Convert.ToInt32(value);

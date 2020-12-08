@@ -1,5 +1,5 @@
-﻿@model ProjectArrow.Entity.MES_ProjectArrow
-
+﻿@model List<ProjectArrow.Entity.MES_ProjectArrow>
+@using ProjectArrow.Entity
 @{
     Layout = null;
 }
@@ -23,9 +23,9 @@
 <body style="margin:16px">
     <div>
         <div class="alert alert-primary" role="alert">
-            ORDER NUMBER <b>@Model.ORDERNUMBER</b> <br />
-            PART NUMBER <b>@Model.PARTNUMBER</b> <br />
-            PART NAME <b>@Model.PARTNAME</b>
+            ORDER NUMBER <b>@(string.Join("&",Array.ConvertAll(Model.ToArray(), o=>o.ORDERNUMBER)))</b> <br />
+            PART NUMBER <b>@(string.Join("&",Array.ConvertAll(Model.ToArray(), o=>o.PARTNUMBER)))</b> <br />
+            PART NAME <b>@(string.Join("&",Array.ConvertAll(Model.ToArray(), o=>o.PARTNAME)))</b>
         </div>
 
         <div class="form-group">
@@ -40,56 +40,140 @@
             <label for="txtHole">Hole Number</label>
             <input type="text" class="form-control" id="txtHole">
         </div>
-        <button type="submit" class="btn btn-primary btn-block" id="btnConfirm">Confirm</button>
+        @*<button type="submit" class="btn btn-primary btn-block" id="btnConfirm">Confirm</button>*@
     </div>
-    <div class="alert alert-success" role="alert">
-        <h4 id="result" class="alert-heading">Well done!</h4>
+    <div class="alert alert-primary" role="alert">
+        <h4 id="result" class="alert-heading">Project Arrow</h4>
         <hr>
-        <p class="mb-1">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+        <p class="mb-1">Please scan material label.</p>
     </div>
     <script>
+        var materialIndex = 0
+        var holeIndex = 0
+        var material = []
+        var hole = []
+        var data = []
+
+        @{
+            foreach(MaterialEntity material in ViewBag.Material)
+            {
+                @: material.push({ 'barcode':'@material.Barcode' })
+            }
+            foreach(HoleEntity hole in ViewBag.Hole)
+            {
+                @: hole.push({ 'barcode':'@hole.Barcode' })
+            }
+        }
+
         $(document).ready(function () {
             $("#txtPartNumber").keydown(function (event) {
                 if (event.keyCode == 13) {
-                    $("#txtSerialNumber").focus();
+                    $.ajax({
+                        url: '@Url.Action("Regex")',
+                        type: 'get',
+                        contentType: 'json',
+                        data: { 'rule': material[materialIndex].barcode, 'barcode': $('#txtPartNumber').val() },
+                        success: function (data) {
+                            if (data.result) {
+                                $('div.alert').removeClass('alert-danger').addClass('alert-success')
+                                $('#result').html('Success!');
+                                $('.mb-1').html('Well Done! Please scan serial label.');
+                                $('#txtSerialNumber').focus();
+                            }
+                            else {
+                                $('div.alert').removeClass('alert-success').addClass('alert-danger')
+                                $('#result').html('Error!');
+                                $('.mb-1').html('Scaned barcode doesn\'t match scan mask.<r /> Please scan again.');
+                                $('#txtPartNumber').val('').focus();
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err.status);
+                            console.log(err.responseText);
+                        }
+                    })
                 }
             })
             $("#txtSerialNumber").keydown(function (event) {
                 if (event.keyCode == 13) {
-                    $("#txtHole").focus();
+                    data.push({ 'c': 'm', 'd': $('#txtPartNumber').val() });
+                    data.push({ 'c': 's', 'd': $('#txtSerialNumber').val() });
+
+                    materialIndex += 1;
+                    if (materialIndex > material.length - 1) {
+                        $('div.alert').removeClass('alert-danger').removeClass('alert-primary').addClass('alert-success')
+                        $('#result').html('Success!');
+                        $('.mb-1').html('Well Done! Please scan hole label.');
+                        $('#txtHole').focus();
+                    }
+                    else {
+                        $('div.alert').removeClass('alert-danger').removeClass('alert-success').addClass('alert-primary')
+                        $('#result').html('Project Arrow');
+                        $('.mb-1').html('Well Done! Please scan another material label.');
+                        $('#txtPartNumber').focus();
+                    }
                 }
             })
             $("#txtHole").keydown(function (event) {
                 if (event.keyCode == 13) {
+                    $.ajax({
+                        url: '@Url.Action("Regex")',
+                        type: 'get',
+                        contentType: 'json',
+                        data: { 'rule': hole[holeIndex].barcode, 'barcode': $('#txtHole').val() },
+                        success: function (d) {
+                            if (d.result) {
+                                data.push({ 'c': 'h', 'd': $('#txtPartNumber').val() });
 
-                }
-            })
-            $("#btnConfirm").click(function () {
-                $.post('@Url.Action("VerifySerial")',
-                    {
-                        partNumber: $('#txtPartNumber').val(),
-                        serialNumber: $('#txtSerialNumber').val(),
-                        holeNumber: $('#txtHole').val()
-                    },
-                    function (data) {
-                        if (data.result) {
-                            $('div.alert').removeClass('alert-danger').addClass('alert-success')
-                            $('#result').html('Well Done!');
-                            $('.mb-1').html('Project Arrow Success.<br/><button class="btn btn-primary btn-block" onclick="window.location = \'@Url.Action("Index")\'">OK</button>');
-                        }
-                        else {
-                            $('div.alert').removeClass('alert-success').addClass('alert-danger')
-                            $('#result').html('Error!');
-                            $('input[type="text"]').val('');
-                            $('#txtPartNumber').focus();
+                                holeIndex += 1;
+                                if (holeIndex > hole.length - 1) {
+                                    $('div.alert').removeClass('alert-danger').addClass('alert-success')
+                                    $('#result').html('Well Done!');
+                                    $('.mb-1').html('Project Arrow Success.<br/><button id="submitProcess" class="btn btn-primary btn-block" onclick="projectArrowSubmit()">OK</button>');
+                                }
+                                else {
+                                    $('div.alert').removeClass('alert-danger').removeClass('alert-success').addClass('alert-primary')
+                                    $('#result').html('Project Arrow');
+                                    $('.mb-1').html('Well Done! Please scan another hole label.');
+                                    $('#txtHole').focus();
+                                }
+                            }
+                            else {
+                                $('div.alert').removeClass('alert-success').addClass('alert-danger')
+                                $('#result').html('Error!');
+                                $('.mb-1').html('Scaned barcode doesn\'t match scan mask.<r /> Please scan again.');
+                                $('#txtHole').val('').focus();
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err.status)
+                            console.log(err.responseText)
                         }
                     })
+                }
             })
-
-            function verifyFail() {
-
-            }
         })
+
+        function projectArrowSubmit() {
+            console.log(JSON.stringify(data))
+            $.post('@Url.Action("ProjectArrowSubmit")', { taskId: getQueryVariable('id'), dataStr: JSON.stringify(data) }, function (e) {
+                if (e.result) {
+                    window.location = '@Url.Action("Index")';
+                }
+                else {
+                }
+            })
+        }
+
+        function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) { return pair[1]; }
+            }
+            return (false);
+        }
     </script>
 </body>
 </html>

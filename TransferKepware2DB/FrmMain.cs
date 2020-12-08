@@ -111,6 +111,36 @@ namespace TransferKepware2DB
                 {
                     MessageBox.Show("Import Success.");
                 }
+
+                var logTable = fSql.Ado.ExecuteScalar(CommandType.Text, $"select 1 from sysObjects where Id=OBJECT_ID(N'MES.TT_PCS_EQUIPMENT_LOG_{info.ID.ToString()}') and xtype='U'");
+                if (logTable != null && logTable.ToString() == "1")
+                { }
+                else
+                    if (MessageBox.Show(this, "Missing Equipment Log Table, Do you want to create automatically?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    sql = File.ReadAllText("CreateLog.txt");
+                    sql = sql.Replace("{{EQUIP_ID}}", info.ID.ToString());
+                    result = fSql.Ado.ExecuteNonQuery(CommandType.Text, sql);
+                    if (result != 0)
+                    {
+                        MessageBox.Show("Create Log Table Success.");
+                    }
+                }
+
+                var logTableDetail = fSql.Ado.ExecuteScalar(CommandType.Text, $"select 1 from sysObjects where Id=OBJECT_ID(N'MES.TT_PCS_EQUIPMENT_LOG_DETAIL_{info.ID.ToString()}') and xtype='U'");
+                if (logTableDetail != null && logTableDetail.ToString() == "1")
+                { }
+                else
+                     if (MessageBox.Show(this, "Missing Equipment Log Detail Table, Do you want to create automatically?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    sql = File.ReadAllText("CreateLogDetail.txt");
+                    sql = sql.Replace("{{EQUIP_ID}}", info.ID.ToString());
+                    result = fSql.Ado.ExecuteNonQuery(CommandType.Text, sql);
+                    if (result != 0)
+                    {
+                        MessageBox.Show("Create Log Detail Table Success.");
+                    }
+                }
             }
         }
     }

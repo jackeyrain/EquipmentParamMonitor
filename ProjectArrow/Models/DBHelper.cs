@@ -22,6 +22,7 @@ namespace ProjectArrow.Models
                         {
                             freeSql = new FreeSql.FreeSqlBuilder()
                                     .UseConnectionString(FreeSql.DataType.SqlServer, WebConfigurationManager.AppSettings["db_connectionstring"])
+                                    .UseMonitorCommand(o => Console.WriteLine(o.CommandText), null)
                                     .Build();
                         }
                     }

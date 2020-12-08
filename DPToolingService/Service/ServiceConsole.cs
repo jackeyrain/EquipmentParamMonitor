@@ -47,17 +47,19 @@ namespace DPToolingService
                          if (handShake != null &&
                             Convert.ToInt16(handShake.Value) == 1)
                          {
+                             LogHelper.Log.LogInfo($"Receive handshake {entity.OrderTag.HandShake} is {handShake.Value}");
                              var sendEntity = orderQueue.RemoveOrderQueue();
-                             jakware.Write(
-                                 new[] {
+                             var result = jakware.Write(
+                                    new[] {
                                   NodeId.Parse(entity.OrderTag.TagAddress),
                                   NodeId.Parse(entity.OrderTag.HandShake),
-                                 },
-                                 new dynamic[]
-                                 {
+                                    },
+                                    new dynamic[]
+                                    {
                                      (UInt16)sendEntity.Value,
                                      (Int16)0,
-                                 });
+                                    });
+                             LogHelper.Log.LogInfo($"Send tooling paramerter {entity.OrderTag.TagAddress} - {sendEntity.Value}");
                          }
                      }
                  }
@@ -93,9 +95,9 @@ namespace DPToolingService
         {
             var message = orderQueue.ToString();
             if (string.IsNullOrEmpty(orderQueue.ToString()))
-                LogHelper.Log.LogInfo("Order's queue is emtpy.", LogHelper.LogType.Warn);
+                Console.WriteLine("Order's queue is emtpy.");
             else
-                LogHelper.Log.LogInfo(message, LogHelper.LogType.Information);
+                Console.WriteLine(message);
         }
 
         public void Stop()
