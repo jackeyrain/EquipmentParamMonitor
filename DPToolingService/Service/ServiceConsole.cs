@@ -14,7 +14,7 @@ namespace DPToolingService
         private Jakware.UaClient.JakwareUaClient jakware = null;
         private System.Threading.CancellationTokenSource cts;
         private readonly List<OrderTag> orderTags;
-
+        private bool running = false;
         public ServiceConsole(List<OrderTag> orderTags)
         {
             cts = new System.Threading.CancellationTokenSource();
@@ -31,7 +31,12 @@ namespace DPToolingService
         public async void Start()
         {
             LogHelper.Log.LogInfo("Service is running.", LogHelper.LogType.Information);
-
+            if (running)
+            {
+                LogHelper.Log.LogInfo("Service already be running.", LogHelper.LogType.Information);
+                return;
+            }
+            running = true;
             await new TaskFactory().StartNew(async () =>
              {
                  while (!cts.IsCancellationRequested)
@@ -45,7 +50,7 @@ namespace DPToolingService
                      {
                          var handShake = jakware.Read(NodeId.Parse(entity.OrderTag.HandShake)).FirstOrDefault();
                          if (handShake != null &&
-                            Convert.ToInt16(handShake.Value) == 1)
+                            Convert.ToInt32(handShake.Value) == 1)
                          {
                              LogHelper.Log.LogInfo($"Receive handshake {entity.OrderTag.HandShake} is {handShake.Value}");
                              var sendEntity = orderQueue.RemoveOrderQueue();
@@ -56,10 +61,10 @@ namespace DPToolingService
                                     },
                                     new dynamic[]
                                     {
-                                     (UInt16)sendEntity.Value,
-                                     (Int16)0,
+                                     (Int32)sendEntity.Value,
+                                     (Int32)0,
                                     });
-                             LogHelper.Log.LogInfo($"Send tooling paramerter {entity.OrderTag.TagAddress} - {sendEntity.Value}");
+                             LogHelper.Log.LogInfo($"Send tooling paramerter address: {entity.OrderTag.TagAddress} - value: {sendEntity.Value}");
                          }
                      }
                  }
@@ -86,9 +91,10 @@ namespace DPToolingService
                                 },
                                 new dynamic[]
                                 {
-                                (UInt16)toolValue,
-                                (Int16)0,
+                                (Int32)toolValue,
+                                (Int32)0,
                                 });
+            LogHelper.Log.LogInfo($"Send tooling paramerter address: {orderTags.First().TagAddress} - value: {toolValue}");
         }
 
         internal void Show()
@@ -102,6 +108,7 @@ namespace DPToolingService
 
         public void Stop()
         {
+            running = false;
             cts.Cancel();
             jakware.DisConnect();
         }
