@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using ProjectArrow.Filiter;
+using System.Web;
 using System.Web.Mvc;
 
 namespace ProjectArrow
@@ -7,7 +8,7 @@ namespace ProjectArrow
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new HandleErrorAttribute());
+            filters.Add(new GlobalExceptionFilter());
         }
     }
 }

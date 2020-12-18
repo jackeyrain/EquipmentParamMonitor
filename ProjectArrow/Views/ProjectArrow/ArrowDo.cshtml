@@ -37,10 +37,9 @@
             <input type="text" class="form-control" id="txtSerialNumber">
         </div>
         <div class="form-group">
-            <label for="txtHole">Hole Number</label>
+            <label for="txtHole">Hose Number</label>
             <input type="text" class="form-control" id="txtHole">
         </div>
-        @*<button type="submit" class="btn btn-primary btn-block" id="btnConfirm">Confirm</button>*@
     </div>
     <div class="alert alert-primary" role="alert">
         <h4 id="result" class="alert-heading">Project Arrow</h4>
@@ -103,14 +102,15 @@
                     if (materialIndex > material.length - 1) {
                         $('div.alert').removeClass('alert-danger').removeClass('alert-primary').addClass('alert-success')
                         $('#result').html('Success!');
-                        $('.mb-1').html('Well Done! Please scan hole label.');
+                        $('.mb-1').html('Well Done! Please scan hose label.');
                         $('#txtHole').focus();
                     }
                     else {
                         $('div.alert').removeClass('alert-danger').removeClass('alert-success').addClass('alert-primary')
                         $('#result').html('Project Arrow');
                         $('.mb-1').html('Well Done! Please scan another material label.');
-                        $('#txtPartNumber').focus();
+                        $('#txtPartNumber').val('').focus();
+                        $(event.target).val('');
                     }
                 }
             })
@@ -134,8 +134,8 @@
                                 else {
                                     $('div.alert').removeClass('alert-danger').removeClass('alert-success').addClass('alert-primary')
                                     $('#result').html('Project Arrow');
-                                    $('.mb-1').html('Well Done! Please scan another hole label.');
-                                    $('#txtHole').focus();
+                                    $('.mb-1').html('Well Done! Please scan another hose label.');
+                                    $('#txtHole').val('').focus();
                                 }
                             }
                             else {

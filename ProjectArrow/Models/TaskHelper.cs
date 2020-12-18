@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using ProjectArrow.Entity;
 
@@ -37,17 +38,33 @@ namespace ProjectArrow.Models
             }
         }
 
-        public bool UpdateTask(int id)
+        public bool UpdateTask(int id, int status)
         {
             var tasks = this.GetTask((long)id);
             tasks.ForEach(o =>
             {
-                o.STATUS = 1;
+                o.STATUS = status;
             });
 
             return DBHelper.Db.Update<MES_ProjectArrow>()
                   .SetSource(tasks)
                   .ExecuteAffrows() > 0;
+        }
+
+        public Task<bool> BarrelLeave(int equipId)
+        {
+            return new TaskFactory().StartNew(() =>
+            {
+                var tasks = DBHelper.Db.Select<MES_ProjectArrow>()
+                                       .Where(o => o.EQUIPID == equipId).Where(o => o.STATUS == 1)
+                                       .ToList();
+                if (tasks.Count <= 0) return false;
+
+                return DBHelper.Db.Update<MES_ProjectArrow>()
+                    .SetSource(tasks)
+                    .Set(o => o.STATUS, 99)
+                    .ExecuteAffrows() > 0;
+            });
         }
     }
 }

@@ -19,7 +19,7 @@ namespace KanBanDataService
                         {
                             fsql = new FreeSql.FreeSqlBuilder()
                                  .UseConnectionString(FreeSql.DataType.SqlServer, ConfigurationManager.AppSettings["PISCES"])
-                                 .UseMonitorCommand(null, (o, p) => Console.WriteLine(o.CommandText))
+                                 // .UseMonitorCommand(null, (o, p) => Console.WriteLine(o.CommandText))
                                  .Build();
                         }
                     }

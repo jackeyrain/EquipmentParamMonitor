@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnifiedAutomation.UaBase;
@@ -103,6 +104,7 @@ namespace KanBanDataService
             data.ForEach(o =>
                 {
                     Console.WriteLine($"{o.name} - {o.value}");
+                    LogHeloer.Log($"{o.name} - {o.value}");
                 });
 
             return data;
@@ -113,8 +115,10 @@ namespace KanBanDataService
             foreach (var d in data)
             {
                 var addressSet = tagConfigs.Where(o => o.Categary.Equals(d.name, StringComparison.OrdinalIgnoreCase));
+
                 foreach (var address in addressSet)
                 {
+                    LogHeloer.Log(address.TagAddress + ":" + d.value.ToString());
                     if (string.IsNullOrEmpty(address.TagAddress))
                     {
                         continue;
@@ -122,8 +126,16 @@ namespace KanBanDataService
                     var result = ua.Write(new WriteDataValue
                     {
                         NodeId = NodeId.Parse(address.TagAddress),
-                        Value = (int)d.value,
+                        Value = Convert.ToInt32(d.value),
                     });
+                    if (result.Count > 0)
+                    {
+                        LogHeloer.Log(string.Join(",", result.Select(o => o.Error)));
+                    }
+                    else
+                    {
+                        LogHeloer.Log("Success");
+                    }
                 }
             }
         }
@@ -140,5 +152,18 @@ namespace KanBanDataService
         public long Last_Shipped { get; set; }
         public int Local_Bank { get; set; }
         public int OEM_Bank { get; set; }
+    }
+
+    public class LogHeloer
+    {
+        static LogHeloer()
+        {
+            if (!Directory.Exists("Logs")) Directory.CreateDirectory("Logs");
+        }
+
+        public static void Log(string value)
+        {
+            File.AppendAllText(Path.Combine("Logs", DateTime.Now.ToString("yyyy-MM-dd") + ".txt"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {value}{Environment.NewLine}");
+        }
     }
 }

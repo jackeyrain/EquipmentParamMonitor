@@ -1,5 +1,7 @@
+using ProjectArrow.App_Code;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -16,6 +18,15 @@ namespace ProjectArrow
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            try
+            {
+                EquipmentMonitor.StartMonitor();
+            }
+            catch (Exception e)
+            {
+                _ = e.Message;
+            }
         }
     }
 }

@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Equipment>
+  <Url>opc.tcp://127.0.0.1:49320</Url>
+</Equipment>

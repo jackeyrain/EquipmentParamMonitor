@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ProjectArrow.Filiter;
 
 namespace ProjectArrow.Controllers
 {
+    [SessionVerifyFilter]
     public class ProjectArrowController : Controller
     {
         private int index { get; set; } = 0;
@@ -175,7 +177,7 @@ namespace ProjectArrow.Controllers
             }));
 
             var result = DBHelper.Db.Insert<MES_TT_PC_RAW_PART_CHARGING>(data).ExecuteAffrows() > 0 &&
-                            new TaskHelper().UpdateTask(Convert.ToInt32(taskId));
+                            new TaskHelper().UpdateTask(Convert.ToInt32(taskId), 1);
 
             return Json(new { result = result });
         }

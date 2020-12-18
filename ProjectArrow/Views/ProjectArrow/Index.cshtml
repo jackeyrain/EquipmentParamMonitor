@@ -36,7 +36,7 @@
                 }
             </select>
             <div class="list-group grap" id="Task">
-                <button type="button" class="list-group-item list-group-item-action active">
+                <button type="button" class="list-group-item list-group-item-action active" onclick='$("#stationList").change()'>
                     Project Arrow Task
                 </button>
                 @for (int i = 0; i < 6; i++)
@@ -70,7 +70,7 @@
         <script>
             function confirmFun() {
                 console.log($('#TaskID').val());
-                window.location = 'ProjectArrow/ArrowDo?id=' + $('#TaskID').val();
+                window.location = '@Url.Action("ArrowDo")'+ '?id=' + $('#TaskID').val();
             }
         </script>
     </div>

@@ -18,6 +18,8 @@ namespace BroadCastDispatch
             var broadcastSections = ConfigurationManager.GetSection("Broadcast") as List<Broadcast>;
             Log("Applicaton is start...");
 
+            if (!Directory.Exists("WSFolder")) Directory.CreateDirectory("WSFolder");
+
             Monitor(broadcastSections);
 
             while (true)
@@ -100,11 +102,24 @@ namespace BroadCastDispatch
                     Thread.Sleep(3 * 1000);
                     var content = File.ReadAllText(fi.FullName);
                     var key = content.Substring(10, 2).Trim();
+                    var vehicleType = content.Substring(23, 2);
+
                     if (!o.BroadcastType.Equals(key, StringComparison.OrdinalIgnoreCase))
                     {
                         Log($"{fi.FullName} doesn't match...", LogLevel.WARNING);
                         continue;
                     }
+
+                    // 发现WS车型报文
+                    if (vehicleType.Equals("ws", StringComparison.OrdinalIgnoreCase) &&
+                        o.BroadcastType.Equals("G", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Log($"{fi.FullName} is WS Vehicle...", LogLevel.ERROR);
+                        new MailHelper().Send("Jelisoft PAB ALARM.", $"<h1><b>{fi.Name} is WS broadcast file. Please hanle this sequence in MPAB.<br />When you correct it, click PAB retry again.</b></h1>", System.Net.Mail.MailPriority.High);
+                        fi.MoveTo(Path.Combine("WSFolder", fi.Name));
+                        continue;
+                    }
+
                     // 如果是G点报文，判断文件长度是否满足需求
                     if (o.BroadcastType.Equals("G", StringComparison.OrdinalIgnoreCase))
                     {

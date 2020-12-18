@@ -9,6 +9,5 @@ namespace ProjectArrow.Entity
     {
         public string BarcodeRule { get; set; }
         public string Barcode { get; set; }
-        public string Serial { get; set; }
     }
 }
