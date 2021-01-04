@@ -1,9 +1,11 @@
 ﻿using Jakware.UaClient;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using UnifiedAutomation.UaBase;
 
@@ -17,6 +19,8 @@ namespace KanBanDataService
         private JakwareUaClient ua;
         public KanbanData()
         {
+            // GetDataFromInterface();
+
             tagConfigs = ConfigurationManager.GetSection("TagConfig") as List<TagConfig>;
             shiftConfig = ConfigurationManager.GetSection("ShiftConfig") as ShiftConfig;
 
@@ -57,8 +61,10 @@ namespace KanBanDataService
             List<(string name, dynamic value)> data = new List<(string name, dynamic value)>();
 
             // 获取看板数
-            var dataTable = DBHelper.DBInstance.Ado.ExecuteDataTable(System.Data.CommandType.StoredProcedure, "PROC_GET_BUFFER_DISPLAY");
-            var dataRow = dataTable.Select($"{nameof(RealData.ASSEMBLY_LINE)} = 'Cockpit'").FirstOrDefault();
+            //var dataTable = DBHelper.DBInstance.Ado.ExecuteDataTable(System.Data.CommandType.StoredProcedure, "PROC_GET_BUFFER_DISPLAY");
+            //var dataRow = dataTable.Select($"{nameof(RealData.ASSEMBLY_LINE)} = 'Cockpit'").FirstOrDefault();
+            var dataRow = this.GetDataFromInterface();
+
             var realData = new RealData
             {
                 ASSEMBLY_LINE = Convert.ToString(dataRow[0] ?? string.Empty),
@@ -138,6 +144,40 @@ namespace KanBanDataService
                     }
                 }
             }
+        }
+
+        public dynamic GetDataFromInterface()
+        {
+            var client = new HttpClient();
+            client.Timeout = new TimeSpan(0, 0, 30);
+            HttpResponseMessage response = null;
+
+            var postParam = new { lines = new[] { ConfigurationManager.AppSettings["PRODUCTIONLINE"] } };
+            var jsonPostParam = Newtonsoft.Json.JsonConvert.SerializeObject(postParam);
+            HttpContent content = new StringContent(jsonPostParam);
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            response = client.PostAsync("http://10.16.112.20:9000/PS/BufferDisplay.aspx/GetBufferList", content).Result;
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                return false;
+            }
+            var result = response.Content.ReadAsStringAsync().Result;
+            var obj = Newtonsoft.Json.JsonConvert.DeserializeObject(result) as JObject;
+            var obj1 = obj.First.First.First;
+
+            List<string> resultObj = new List<string>();
+            resultObj.Add(obj1.Value<string>("AssemblyLine"));
+            resultObj.Add(obj1.Value<string>("AssemblyLineName"));
+            resultObj.Add(obj1.Value<string>("LastReceived"));
+            resultObj.Add(obj1.Value<string>("InfoPointCode"));
+            resultObj.Add(obj1.Value<string>("CurrentSeq"));
+            resultObj.Add(obj1.Value<string>("QueueCount"));
+            resultObj.Add(obj1.Value<string>("LastShipped"));
+            resultObj.Add(obj1.Value<string>("LocalBank"));
+            resultObj.Add(obj1.Value<string>("OemBank"));
+
+            return resultObj;
         }
     }
 

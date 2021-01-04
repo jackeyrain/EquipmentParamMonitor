@@ -78,7 +78,7 @@ namespace ShipperToQAD
                 .IncludeMany(o => o.LOADING_LIST_DETAILS.Where(p => o.FID == p.LOADING_LIST_FID))
                 .ToList();
 
-            var opcsOrm = fsql.GetRepository<OPCS>();
+            var custSortInfoOrm = fsql.GetRepository<MES_TT_CI_CUST_SORT_INFO>();
             // 遍历装车单
             foreach (LOADING_LIST loading in loadings)
             {
@@ -103,7 +103,7 @@ namespace ShipperToQAD
                     // 遍历ruck明细
                     foreach (SHIPPING_DETAIL detail in shipping.SHIPPING_DETAILs)
                     {
-                        var opcs = opcsOrm.Where(o => o.CARSEQUENCE == detail.CUST_INFO_SEQ).First();
+                        var sort_info = custSortInfoOrm.Where(o => o.CUST_INFO_SEQ == detail.CUST_INFO_SEQ).WithLock(SqlServerLock.NoLock).First();
                         // var modelYear = cIM_VEHICLE_CATEGORies.FirstOrDefault(o => o.VEHICLE_YEAR.Equals(opcs.MODELYEAR, StringComparison.OrdinalIgnoreCase));
                         var shipping_detail = part_shipping.pART_SHIPPING_DETAILs.FirstOrDefault(o => o.PART_NO.Equals(detail.PART_NO, StringComparison.OrdinalIgnoreCase));
                         // 判断发运明细是否需要发运，以FRAME_AGREEMENT_CODE作为判断依据
@@ -126,10 +126,10 @@ namespace ShipperToQAD
                             PARENTRECID_PKG = "1", // PACKSLIP RANGE DEFINED FOR HIGHLAND PARK
                             RECID_PRT = index++.ToString(), // BOL ALWAYS EQUALS THE PACKSLIP IN QAD
 
-                            LIN_JOB_SEQ_A = opcs.CARSEQUENCE.ToString(), // CUSTOMER BROADCAST SEQUENCE
+                            LIN_JOB_SEQ_A = sort_info.CUST_INFO_SEQ.ToString(), // CUSTOMER BROADCAST SEQUENCE
                             LIN_JOB_SEQ_B = string.Empty, // define as empty
                         });
-                        Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Add shipper detail {part_shipping.PART_SHIPPING_CODE} - {opcs.VIN}");
+                        Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Add shipper detail {part_shipping.PART_SHIPPING_CODE} - {sort_info.VIN_CODE}");
 
                         // 判断当前发运组是否是符合添加Labor Part规则
                         if (LaborPartCategory.Any(o => part_shipping.PART_SHIPPING_CODE.Equals(o, StringComparison.OrdinalIgnoreCase)))
@@ -148,10 +148,10 @@ namespace ShipperToQAD
                                 PARENTRECID_PKG = "1", // PACKSLIP RANGE DEFINED FOR HIGHLAND PARK
                                 RECID_PRT = index++.ToString(), // BOL ALWAYS EQUALS THE PACKSLIP IN QAD
 
-                                LIN_JOB_SEQ_A = opcs.CARSEQUENCE.ToString(), // CUSTOMER BROADCAST SEQUENCE
+                                LIN_JOB_SEQ_A = sort_info.CUST_INFO_SEQ.ToString(), // CUSTOMER BROADCAST SEQUENCE
                                 LIN_JOB_SEQ_B = string.Empty, // define as empty
                             });
-                            Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Add shipper detail {part_shipping.PART_SHIPPING_CODE} - {opcs.VIN}");
+                            Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Add shipper detail {part_shipping.PART_SHIPPING_CODE} - {sort_info.VIN_CODE}");
                         }
                     }
                 }
