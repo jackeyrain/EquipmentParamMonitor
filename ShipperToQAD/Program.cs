@@ -107,8 +107,22 @@ namespace ShipperToQAD
                         // var modelYear = cIM_VEHICLE_CATEGORies.FirstOrDefault(o => o.VEHICLE_YEAR.Equals(opcs.MODELYEAR, StringComparison.OrdinalIgnoreCase));
                         var shipping_detail = part_shipping.pART_SHIPPING_DETAILs.FirstOrDefault(o => o.PART_NO.Equals(detail.PART_NO, StringComparison.OrdinalIgnoreCase));
                         // 判断发运明细是否需要发运，以FRAME_AGREEMENT_CODE作为判断依据
-                        if (shipping_detail == null || !shipping_detail.FRAME_AGREEMENT_CODE.Equals("1066", StringComparison.OrdinalIgnoreCase))
+                        // 如果是1066 所有车型均可
+                        // 如果是1066 + 车型，特定车型
+                        // 不包含1066 返回
+                        if (shipping_detail == null || !shipping_detail.FRAME_AGREEMENT_CODE.Contains("1066"))
                         {
+                            continue;
+                        }
+                        // 仅包含1066，所有车型均可
+                        if (shipping_detail.FRAME_AGREEMENT_CODE.Trim().Equals("1066"))
+                        {
+                            // 什么都不做
+                        }
+                        // 包含1066 并且不包含车型的情况
+                        else if (!shipping_detail.FRAME_AGREEMENT_CODE.Contains(sort_info.VEHICLE_NO))
+                        {
+                            // 执行下次循环
                             continue;
                         }
                         // 添加到同步列表
