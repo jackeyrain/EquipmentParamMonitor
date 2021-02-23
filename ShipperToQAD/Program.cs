@@ -74,7 +74,7 @@ namespace ShipperToQAD
                     (string.IsNullOrEmpty(o.REMARK)
                         // || o.REMARK.Equals("ESB_FAIL", StringComparison.OrdinalIgnoreCase)
                         || o.REMARK.Equals("ESB_RESEND", StringComparison.OrdinalIgnoreCase)))
-                //.Where(o=> o.ID == 70)
+                // .Where(o => o.ID == 2381)
                 .IncludeMany(o => o.LOADING_LIST_DETAILS.Where(p => o.FID == p.LOADING_LIST_FID))
                 .ToList();
 
@@ -100,6 +100,10 @@ namespace ShipperToQAD
                         .IncludeMany(o => o.pART_SHIPPING_DETAILs.Where(p => p.PART_SHIPPING_FID == o.FID))
                         .First();
                     Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Start to send ruck {shipping.SHIPPING_CODE}");
+
+                    // 用来记录已经强制加入labor
+                    List<string> addedLablorVINSet = new List<string>();
+
                     // 遍历ruck明细
                     foreach (SHIPPING_DETAIL detail in shipping.SHIPPING_DETAILs)
                     {
@@ -146,7 +150,8 @@ namespace ShipperToQAD
                         Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Add shipper detail {part_shipping.PART_SHIPPING_CODE} - {sort_info.VIN_CODE}");
 
                         // 判断当前发运组是否是符合添加Labor Part规则
-                        if (LaborPartCategory.Any(o => part_shipping.PART_SHIPPING_CODE.Equals(o, StringComparison.OrdinalIgnoreCase)))
+                        if (LaborPartCategory.Any(o => part_shipping.PART_SHIPPING_CODE.Equals(o, StringComparison.OrdinalIgnoreCase)) &&
+                            !addedLablorVINSet.Exists(o => o.Equals(detail.LZ_VIN_CODE)))
                         {
                             iNSEQShipperTypes.Add(new INSEQShipperType
                             {
@@ -165,6 +170,7 @@ namespace ShipperToQAD
                                 LIN_JOB_SEQ_A = sort_info.CUST_INFO_SEQ.ToString(), // CUSTOMER BROADCAST SEQUENCE
                                 LIN_JOB_SEQ_B = string.Empty, // define as empty
                             });
+                            addedLablorVINSet.Add(detail.LZ_VIN_CODE);
                             Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Add shipper detail {part_shipping.PART_SHIPPING_CODE} - {sort_info.VIN_CODE}");
                         }
                     }
