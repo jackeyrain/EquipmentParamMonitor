@@ -11,7 +11,7 @@ namespace ShipperToQAD
     {
         static IFreeSql fsql = null;
         static List<string> LaborPartCategory = null;
-        static string LaborPartNumber = string.Empty;
+        static Dictionary<string, string> LaborPartNumber = new Dictionary<string, string>();
 
         static void Main(string[] args)
         {
@@ -22,7 +22,13 @@ namespace ShipperToQAD
 
             LaborPartCategory = new List<string>();
             LaborPartCategory.AddRange(ConfigurationManager.AppSettings["LaborPartCategory"]?.Split(new[] { ',' }));
-            LaborPartNumber = ConfigurationManager.AppSettings["LaborPartNumber"];
+            var _LaborPartNumber = ConfigurationManager.AppSettings["LaborPartNumber"];
+            var __LaborPartNumber = _LaborPartNumber.Split(new[] { ',' });
+            foreach (var _Lab in __LaborPartNumber)
+            {
+                var ___LaborPartNumber = _Lab.Split(new[] { ':' });
+                LaborPartNumber.Add(___LaborPartNumber[0], ___LaborPartNumber[1]);
+            }
 
             //请务必定义成 Singleton 单例模式
             //#if DEBUG
@@ -70,10 +76,10 @@ namespace ShipperToQAD
         {
             // 获取已完成未同步装车单
             var loadings = fsql.GetRepository<LOADING_LIST>()
-                .Where(o => o.STATUS == 50 && o.VALID_FLAG &&
-                    (string.IsNullOrEmpty(o.REMARK)
-                        // || o.REMARK.Equals("ESB_FAIL", StringComparison.OrdinalIgnoreCase)
-                        || o.REMARK.Equals("ESB_RESEND", StringComparison.OrdinalIgnoreCase)))
+                 .Where(o => o.STATUS == 50 && o.VALID_FLAG &&
+                     (string.IsNullOrEmpty(o.REMARK)
+                         // || o.REMARK.Equals("ESB_FAIL", StringComparison.OrdinalIgnoreCase)
+                         || o.REMARK.Equals("ESB_RESEND", StringComparison.OrdinalIgnoreCase)))
                 // .Where(o => o.ID == 2381)
                 .IncludeMany(o => o.LOADING_LIST_DETAILS.Where(p => o.FID == p.LOADING_LIST_FID))
                 .ToList();
@@ -153,12 +159,16 @@ namespace ShipperToQAD
                         if (LaborPartCategory.Any(o => part_shipping.PART_SHIPPING_CODE.Equals(o, StringComparison.OrdinalIgnoreCase)) &&
                             !addedLablorVINSet.Exists(o => o.Equals(detail.LZ_VIN_CODE)))
                         {
+                            // 如果当前车辆信息没有配置对于labor，跳过执行
+                            if (!LaborPartNumber.ContainsKey(sort_info.VEHICLE_NO))
+                                continue;
+
                             iNSEQShipperTypes.Add(new INSEQShipperType
                             {
                                 SERL_NBR_TYPE = "PRT", // RCK IS THE VALUE OF THE SERIAL TYPE LEVEL 1
                                 SERL_NBR = detail.ID.ToString(), // INTERNAL IPC SERIAL, WILL NOT BE TRANSFERRED TO QAD. what's this field's meaning.
                                 SERL_QTY = detail.PLAN_QTY.ToString(), // QTY OF ITEM BASED ON THE VIN DETAIL
-                                LIN_CUST_ITEM = LaborPartNumber, // CUSTOMER ITEM IN THE BROADCAST
+                                LIN_CUST_ITEM = LaborPartNumber[sort_info.VEHICLE_NO], // CUSTOMER ITEM IN THE BROADCAST
                                 LIN_VIN = detail.LZ_VIN_CODE, // modelYear.VEHICLE_CATEGORY_CODE + opcs.VIN, // VIN DETAIL ON THE BROADCAST. 
 
                                 LIN_PO_NBR = string.Empty, // define as empty

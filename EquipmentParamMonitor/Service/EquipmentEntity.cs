@@ -68,11 +68,13 @@ namespace EquipmentParamMonitor.Service
         {
             try
             {
+                /* 为置空车逻辑做准备
                 if (!string.IsNullOrEmpty(STATION110INSTATION) && !string.IsNullOrEmpty(EMTPYCARRIERSIGNAL))
                 {
                     var _110_instation = e.JakwareDataChanges.FirstOrDefault(o => o.MonitoredItem.NodeId.ToString().Equals(STATION110INSTATION, StringComparison.OrdinalIgnoreCase));
                     this.Execute1stStationVerify(_110_instation);
                 }
+                */
 
                 var carrier = e.JakwareDataChanges.FirstOrDefault(o =>
                             o.MonitoredItem.NodeId.ToString().Equals(CarrierID.ToString(), StringComparison.OrdinalIgnoreCase));

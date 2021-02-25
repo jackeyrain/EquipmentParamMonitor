@@ -2,6 +2,7 @@
 using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,8 +17,11 @@ namespace EquipmentParamMonitor.ACCESS
             // 获取主工位设备
             var stationSet = this.GetList(o =>
             o.EQUIP_TYPE.Equals("1", StringComparison.OrdinalIgnoreCase)
-            && !o.CODE.StartsWith("TT", StringComparison.OrdinalIgnoreCase)
-            && o.NAME.StartsWith("CKPT_IP_LINE", StringComparison.OrdinalIgnoreCase)
+            &&
+            (!o.CODE.StartsWith("TT", StringComparison.OrdinalIgnoreCase)
+            && o.NAME.StartsWith("CKPT_IP_LINE", StringComparison.OrdinalIgnoreCase))
+            ||
+            (ConfigurationManager.AppSettings["EXTARLOCATION"].Split(new[] { ',' }).Contains(o.NAME))
             );
             foreach (var station in stationSet)
             {
