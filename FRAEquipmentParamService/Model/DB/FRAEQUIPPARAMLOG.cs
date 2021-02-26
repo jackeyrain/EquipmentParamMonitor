@@ -5,7 +5,7 @@ using System;
 namespace DPToleranceMonitorService.Model.DB
 {
 
-    [JsonObject(MemberSerialization.OptIn), Table(Name = "MES.FRAEQUIPPARAMLOG", DisableSyncStructure = true)]
+    [JsonObject(MemberSerialization.OptIn), Table(Name = "MES.FRAEQUIPPARAMLOG", DisableSyncStructure = false)]
 	public partial class MES_FRAEQUIPPARAMLOG {
 
 		[JsonProperty, Column(IsPrimary = true, IsIdentity = true)]

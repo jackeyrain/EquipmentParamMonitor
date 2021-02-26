@@ -11,10 +11,10 @@ namespace FRAEquipmentParamService.Access
         {
             freeSql = new FreeSql.FreeSqlBuilder()
                 .UseConnectionString(FreeSql.DataType.SqlServer, ConfigurationManager.AppSettings["DBConnection"])
-                .UseAutoSyncStructure(false)
+                .UseAutoSyncStructure(true)
                 .Build();
         }
 
-        public static IFreeSql Instance { get; set; }
+        public static IFreeSql Instance { get { return freeSql; } }
     }
 }
