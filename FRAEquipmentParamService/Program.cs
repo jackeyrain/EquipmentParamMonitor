@@ -13,6 +13,7 @@ namespace FRAEquipmentParamService
 {
     class Program
     {
+        // 任务集合
         static List<IStation> stationMonitors = new List<IStation>();
         static void Main(string[] args)
         {
@@ -30,19 +31,32 @@ namespace FRAEquipmentParamService
             var loadConfig = configFileInfo.FirstOrDefault(o => o.Name.Equals("load.xlsx", StringComparison.OrdinalIgnoreCase));
             var loadData = new StationDataConvert(loadConfig.FullName).LoadDataParse();
             var loadStation = new StationLoadMonitor(loadData);
-            stationMonitors.Add(loadStation);
+            // 上线工位绑定任务
+            // stationMonitors.Add(loadStation);
 
             configFileInfo.Remove(loadConfig);
             foreach (var file in configFileInfo)
             {
+                // 站点参数收集任务
                 var data = new StationDataConvert(file.FullName).DataParse();
                 var stationMonitor = new StationMonitor(data);
                 stationMonitors.Add(stationMonitor);
             }
-
+            // 开始执行任务
             stationMonitors.ForEach(o => o.Initialize());
 
-            Console.ReadKey(false);
+            var command = string.Empty;
+            do
+            {
+                command = Console.ReadLine();
+                switch (command.ToLower())
+                {
+                    case "exit":
+                        stationMonitors.ForEach(o => o.Dispose());
+                        return;
+                }
+            }
+            while (true);
         }
     }
 }

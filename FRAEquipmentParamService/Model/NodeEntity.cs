@@ -8,6 +8,8 @@ namespace FRAEquipmentParamService.Model
 {
     public class NodeEntity
     {
+        private object _value;
+
         public NodeEntity()
         {
         }
@@ -22,7 +24,14 @@ namespace FRAEquipmentParamService.Model
         public string Flag { get; set; }
 
         [Newtonsoft.Json.JsonIgnore]
-        public object Value { get; set; }
+        public object Value
+        {
+            get => _value;
+            set
+            {
+                _value = value;
+            }
+        }
         public DateTime CreateDT { get; set; }
 
         public override string ToString()

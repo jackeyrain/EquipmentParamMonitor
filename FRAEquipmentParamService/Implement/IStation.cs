@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FRAEquipmentParamService.Implement
 {
-    interface IStation
+    interface IStation : IDisposable
     {
         void Initialize();
     }

@@ -109,53 +109,56 @@ namespace FRAEquipmentParamService.Implement
             });
         }
 
-        private void Jakware_JakwareDataChangedEventHandler(UnifiedAutomation.UaClient.Subscription subscription, Jakware.UaClient.JakwareDataChangedEventArgs e)
+        private async void Jakware_JakwareDataChangedEventHandler(UnifiedAutomation.UaClient.Subscription subscription, Jakware.UaClient.JakwareDataChangedEventArgs e)
         {
-            foreach (var item in e.JakwareDataChanges)
+            await new TaskFactory().StartNew(() =>
             {
-                if (!item.IsGood) continue;
-
-                var tagAddress = item.MonitoredItem.NodeId.ToString();
-                this.DicParamSet.TryGetValue(tagAddress, out var node);
-                if (node == null)
+                foreach (var item in e.JakwareDataChanges)
                 {
-                    LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress} wasn't registed.", LogHelper.LogType.Error, false);
-                    continue;
-                }
+                    if (!item.IsGood) continue;
 
-                node.Value = item.Value.Value;
-                node.CreateDT = DateTime.Now;
-                LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value.ToString()}", LogHelper.LogType.Information, false);
-
-                if (node.Flag.Equals("running", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (Convert.ToBoolean(node.Value))
+                    var tagAddress = item.MonitoredItem.NodeId.ToString();
+                    this.DicParamSet.TryGetValue(tagAddress, out var node);
+                    if (node == null)
                     {
-                        LogHelper.Log.LogInfo($"{Entity.Name} receive running START.", LogHelper.LogType.Warn, false);
-                        Entity.GetPallet();
+                        LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress} wasn't registed.", LogHelper.LogType.Error, false);
+                        continue;
                     }
-                    else
+
+                    node.Value = item.Value.Value;
+                    node.CreateDT = DateTime.Now;
+                    LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value?.ToString()}", LogHelper.LogType.Information, false);
+
+                    if (node.Flag.Equals("running", StringComparison.OrdinalIgnoreCase))
                     {
-                        LogHelper.Log.LogInfo($"{Entity.Name} receive running STOP.", LogHelper.LogType.Warn, false);
-                        Entity.GetPallet();
-                        if (Entity.MES_TP_FRA_Pallet == null)
+                        if (Convert.ToBoolean(node.Value))
                         {
-                            LogHelper.Log.LogInfo($"{Entity.Name} Pallet Entity is NULL.", LogHelper.LogType.Exception, false);
-                            continue;
+                            LogHelper.Log.LogInfo($"{Entity.Name} receive running START.", LogHelper.LogType.Warn, false);
+                            Entity.GetPallet();
                         }
+                        else
+                        {
+                            LogHelper.Log.LogInfo($"{Entity.Name} receive running STOP.", LogHelper.LogType.Warn, false);
+                            Entity.GetPallet();
+                            if (Entity.MES_TP_FRA_Pallet == null)
+                            {
+                                LogHelper.Log.LogInfo($"{Entity.Name} Pallet Entity is NULL.", LogHelper.LogType.Exception, false);
+                                continue;
+                            }
 
-                        var t1 = SaveIntoDB();
-                        var t2 = SaveIntoToBeRepaired();
+                            var t1 = SaveIntoDB();
+                            var t2 = SaveIntoToBeRepaired();
 
-                        Task.WaitAll(t1, t2);
-                        LogHelper.Log.LogInfo($"{Entity.Name} saved parameter's quantity is {t1.Result}.", LogHelper.LogType.Warn, false);
-                        LogHelper.Log.LogInfo($"{Entity.Name} saved defect's quantity is {t2.Result}.", LogHelper.LogType.Warn, false);
+                            Task.WaitAll(t1, t2);
+                            LogHelper.Log.LogInfo($"{Entity.Name} saved parameter's quantity is {t1.Result}.", LogHelper.LogType.Warn, false);
+                            LogHelper.Log.LogInfo($"{Entity.Name} saved defect's quantity is {t2.Result}.", LogHelper.LogType.Warn, false);
 
-                        Entity.Initialize();
-                        this.Reinitialize();
+                            Entity.Initialize();
+                            this.Reinitialize();
+                        }
                     }
                 }
-            }
+            });
         }
 
         private void Reinitialize()

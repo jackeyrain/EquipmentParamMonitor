@@ -55,65 +55,68 @@ namespace FRAEquipmentParamService.Implement
             LogHelper.Log.LogInfo($"{Entity.Name} initialize completed.", LogHelper.LogType.Warn, false);
         }
 
-        private void Jakware_JakwareDataChangedEventHandler(UnifiedAutomation.UaClient.Subscription subscription, Jakware.UaClient.JakwareDataChangedEventArgs e)
+        private async void Jakware_JakwareDataChangedEventHandler(UnifiedAutomation.UaClient.Subscription subscription, Jakware.UaClient.JakwareDataChangedEventArgs e)
         {
-            foreach (var item in e.JakwareDataChanges)
+            await new TaskFactory().StartNew(() =>
             {
-                if (!item.IsGood) continue;
-
-                var tagAddress = item.MonitoredItem.NodeId.ToString();
-                this.DicParamSet.TryGetValue(tagAddress, out var node);
-                if (node == null)
+                foreach (var item in e.JakwareDataChanges)
                 {
-                    LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress} wasn't registed.", LogHelper.LogType.Error, false);
-                    continue;
-                }
-                node.Value = item.Value.Value;
-                node.CreateDT = DateTime.Now;
-                LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value.ToString()}", LogHelper.LogType.Information, false);
+                    if (!item.IsGood) continue;
 
-                if (node.Flag.Equals("WORK_REQUIRE", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (Convert.ToBoolean(node.Value))
+                    var tagAddress = item.MonitoredItem.NodeId.ToString();
+                    this.DicParamSet.TryGetValue(tagAddress, out var node);
+                    if (node == null)
                     {
-                        var palletId = Entity.PalletID;
-                        var workOrder = Entity.WorkOrder;
+                        LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress} wasn't registed.", LogHelper.LogType.Error, false);
+                        continue;
+                    }
+                    node.Value = item.Value.Value;
+                    node.CreateDT = DateTime.Now;
+                    LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value?.ToString()}", LogHelper.LogType.Information, false);
 
-                        var workInfo = DBAccess.Instance.
-                            Select<MES_TT_APS_WORK_ORDER>()
-                            .Where(o => o.ORDER_CODE.Equals(Convert.ToString(workOrder.Value), StringComparison.OrdinalIgnoreCase) && o.VALID_FLAG.Value)
-                            .First();
-                        if (workInfo == null)
+                    if (node.Flag.Equals("WORK_REQUIRE", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (Convert.ToBoolean(node.Value))
                         {
-                            LogHelper.Log.LogInfo($"{Entity.Name}-Paller {palletId.Value.ToString()} without binding Workorder.", LogHelper.LogType.Exception, false);
+                            var palletId = Entity.PalletID;
+                            var workOrder = Entity.WorkOrder;
+
+                            var workInfo = DBAccess.Instance.
+                                Select<MES_TT_APS_WORK_ORDER>()
+                                .Where(o => o.ORDER_CODE.Equals(Convert.ToString(workOrder.Value), StringComparison.OrdinalIgnoreCase) && o.VALID_FLAG.Value)
+                                .First();
+                            if (workInfo == null)
+                            {
+                                LogHelper.Log.LogInfo($"{Entity.Name}-Paller {palletId.Value.ToString()} without binding Workorder.", LogHelper.LogType.Exception, false);
+                            }
+                            if (palletId.Value != null && workOrder.Value != null)
+                            {
+                                MES_TP_FRA_Pallet pallet = null;
+                                pallet = DBAccess.Instance.Select<MES_TP_FRA_Pallet>().Where(o => o.PalletID.Equals(palletId.Value.ToString())).First();
+                                if (pallet == null)
+                                    pallet = new MES_TP_FRA_Pallet
+                                    {
+                                        PalletID = Convert.ToString(palletId.Value),
+                                    };
+
+                                pallet.LineCode = ConfigurationManager.AppSettings["LineCode"]; // workInfo.ASSEMBLY_LINE;
+                                pallet.WorkOrder = workInfo.ORDER_CODE;
+                                pallet.Sequence = Convert.ToString(workInfo.ORDER_SEQ);
+                                pallet.Vin = workInfo.VIN_CODE;
+                                pallet.CreateDT = DateTime.Now;
+                                pallet.CreateUser = AppDomain.CurrentDomain.FriendlyName;
+
+                                DBAccess.Instance.InsertOrUpdate<MES_TP_FRA_Pallet>().SetSource(pallet).ExecuteAffrows();
+                                LogHelper.Log.LogInfo($"{Entity.Name} Pallet {palletId.Value.ToString()} binding Work order {workInfo.ORDER_CODE}-{workInfo.ORDER_SEQ}-{workInfo.VIN_CODE}", LogHelper.LogType.Warn, false);
+                            }
                         }
-                        if (palletId.Value != null && workOrder.Value != null)
+                        else
                         {
-                            MES_TP_FRA_Pallet pallet = null;
-                            pallet = DBAccess.Instance.Select<MES_TP_FRA_Pallet>().Where(o => o.PalletID.Equals(palletId.Value.ToString())).First();
-                            if (pallet == null)
-                                pallet = new MES_TP_FRA_Pallet
-                                {
-                                    PalletID = Convert.ToString(palletId.Value),
-                                };
 
-                            pallet.LineCode = ConfigurationManager.AppSettings["LineCode"]; // workInfo.ASSEMBLY_LINE;
-                            pallet.WorkOrder = workInfo.ORDER_CODE;
-                            pallet.Sequence = Convert.ToString(workInfo.ORDER_SEQ);
-                            pallet.Vin = workInfo.VIN_CODE;
-                            pallet.CreateDT = DateTime.Now;
-                            pallet.CreateUser = AppDomain.CurrentDomain.FriendlyName;
-
-                            DBAccess.Instance.InsertOrUpdate<MES_TP_FRA_Pallet>().SetSource(pallet).ExecuteAffrows();
-                            LogHelper.Log.LogInfo($"{Entity.Name} Pallet {palletId.Value.ToString()} binding Work order {workInfo.ORDER_CODE}-{workInfo.ORDER_SEQ}-{workInfo.VIN_CODE}", LogHelper.LogType.Warn, false);
                         }
                     }
-                    else
-                    {
-
-                    }
                 }
-            }
+            });
         }
     }
 }

@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FRAEquipmentParamService.Model
 {
@@ -27,10 +26,11 @@ namespace FRAEquipmentParamService.Model
         {
             var _resultTag = TagAddress.FirstOrDefault(o => o.Flag.Equals("result", System.StringComparison.OrdinalIgnoreCase));
             var _value = Convert.ToInt32(_resultTag?.Value);
-            if (_value == 1)
-                return true;
+            // 如果结果为2则为失败
+            if (_value == 2)
+                return false;
 
-            return false;
+            return true;
         }
     }
 }
