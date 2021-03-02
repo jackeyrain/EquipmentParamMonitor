@@ -162,15 +162,10 @@
     <None Include="Configs\log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Data\DF140.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\DF150.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\Load.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="Data\DF140.xlsx" />
+    <None Include="Data\DF150.xlsx" />
+    <None Include="Data\DF160.xlsx" />
+    <None Include="Data\Load.xlsx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -88,6 +88,7 @@ namespace FRAEquipmentParamService.Implement
                             if (workInfo == null)
                             {
                                 LogHelper.Log.LogInfo($"{Entity.Name}-Paller {palletId.Value.ToString()} without binding Workorder.", LogHelper.LogType.Exception, false);
+                                continue;
                             }
                             if (palletId.Value != null && workOrder.Value != null)
                             {

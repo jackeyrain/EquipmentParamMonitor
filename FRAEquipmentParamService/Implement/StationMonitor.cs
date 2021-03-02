@@ -60,52 +60,78 @@ namespace FRAEquipmentParamService.Implement
 
         public Task<int> SaveIntoDB()
         {
-            return new TaskFactory().StartNew(() =>
+            return new Task<int>(() =>
             {
-                var data = Array.ConvertAll(this.DicParamSet.Values.ToArray(),
-                o => new MES_FRAEQUIPPARAMLOG()
+                try
                 {
-                    CARRIERID = Entity.MES_TP_FRA_Pallet.PalletID,
-                    WORKORDER = Entity.MES_TP_FRA_Pallet.WorkOrder,
-                    SEQUENCE = Entity.MES_TP_FRA_Pallet.Sequence,
-                    VINCODE = Entity.MES_TP_FRA_Pallet.Vin,
-                    STATION = Entity.Name,
-                    PARAMTAG = o.TagAddress,
-                    VALUE = o.Value == null ? string.Empty : o.Value.ToString(),
-                    CREATEDATETIME = o.CreateDT,
+                    var data = Array.ConvertAll(this.DicParamSet.Values.ToArray(),
+                    o => new MES_FRAEQUIPPARAMLOG()
+                    {
+                        CARRIERID = Entity.MES_TP_FRA_Pallet.PalletID,
+                        WORKORDER = Entity.MES_TP_FRA_Pallet.WorkOrder,
+                        SEQUENCE = Entity.MES_TP_FRA_Pallet.Sequence,
+                        VINCODE = Entity.MES_TP_FRA_Pallet.Vin,
+                        STATION = Entity.Name,
+                        PARAMTAG = o.TagAddress,
+                        VALUE = o.Value == null ? string.Empty : o.Value.ToString(),
+                        CREATEDATETIME = o.CreateDT,
+                    }
+                    ).ToList();
+                    var result = DBAccess.Instance.Insert<MES_FRAEQUIPPARAMLOG>().AppendData(data.OrderBy(o => o.PARAMTAG)).NoneParameter().ExecuteAffrows();
+                    return result;
                 }
-                ).ToList();
-                var result = DBAccess.Instance.Insert<MES_FRAEQUIPPARAMLOG>().AppendData(data.OrderBy(o => o.PARAMTAG)).ExecuteAffrows();
-                return result;
+                catch (Exception ex)
+                {
+                    LogHelper.Log.LogInfo(ex, LogHelper.LogType.Exception);
+                    return -1;
+                }
             });
         }
 
         public Task<int> SaveIntoToBeRepaired()
         {
-            return new TaskFactory().StartNew(() =>
+            return new Task<int>(() =>
             {
-                var toBeRepaired = Entity.GetFailResult();
-                if (toBeRepaired.Count <= 0) return 0;
-                var data = Array.ConvertAll(toBeRepaired.ToArray(), o => new MES_TR_CIM_TOBE_REPAIRED
+                try
                 {
-                    FID = Guid.NewGuid(),
-                    ORDER_CODE = Entity.MES_TP_FRA_Pallet.WorkOrder,
-                    ASSEMBLY_LINE = Entity.MES_TT_APS_WORK_ORDER.ASSEMBLY_LINE,
-                    LOCATION = Entity.MES_TT_APS_WORK_ORDER.mES_TT_APS_WORK_ORDER_ASSEMBLies.FirstOrDefault(p => p.LOCATION.Contains("170")).LOCATION,
-                    DESCRIPTION = $"{o.Name} Tolerance Fail",
-                    RESULT = "NOK",
-                    INSPECTED = false,
-                    REMARK = $"{o.Name}",
-                    ADD_BY_INSPECTOR = true,
-                    VALID_FLAG = true,
-                    CREATE_USER = AppDomain.CurrentDomain.FriendlyName,
-                    CREATE_DATE = DateTime.Now,
-                    DATA_SOURCE = 1,
-                    REPAIRE_TYPE = 6,
+                    var firstLocation = Entity.MES_TT_APS_WORK_ORDER.mES_TT_APS_WORK_ORDER_ASSEMBLies.FirstOrDefault(o => o.LOCATION.Contains("170"))?.LOCATION;
+                    LogHelper.Log.LogInfo($"Get fail resilt insert into {firstLocation}");
+
+                    var toBeRepaired = Entity.GetFailResult();
+                    LogHelper.Log.LogInfo($"Get fail quantity {toBeRepaired.Count}");
+
+                    if (toBeRepaired.Count <= 0)
+                    {
+                        LogHelper.Log.LogInfo($"All the result is Good.");
+                        return 0;
+                    }
+                    var data = Array.ConvertAll(toBeRepaired.ToArray(), o => new MES_TR_CIM_TOBE_REPAIRED
+                    {
+                        FID = Guid.NewGuid(),
+                        ORDER_CODE = Entity.MES_TP_FRA_Pallet.WorkOrder,
+                        ASSEMBLY_LINE = Entity.MES_TT_APS_WORK_ORDER.ASSEMBLY_LINE,
+                        LOCATION = firstLocation,
+                        DESCRIPTION = $"{this.Entity.Name}-{o.Name}",
+                        RESULT = "NOK",
+                        INSPECTED = false,
+                        REMARK = $"{o.Name}",
+                        ADD_BY_INSPECTOR = true,
+                        VALID_FLAG = true,
+                        CREATE_USER = AppDomain.CurrentDomain.FriendlyName,
+                        CREATE_DATE = DateTime.Now,
+                        DATA_SOURCE = 1,
+                        REPAIRE_TYPE = 6,
+                    }
+                    ).ToList();
+                    LogHelper.Log.LogInfo($"Ready to insert into DB repair table.");
+                    var result = DBAccess.Instance.Insert<MES_TR_CIM_TOBE_REPAIRED>().AppendData(data).NoneParameter().ExecuteAffrows();
+                    return result;
                 }
-                ).ToList();
-                var result = DBAccess.Instance.Insert<MES_TR_CIM_TOBE_REPAIRED>().AppendData(data).ExecuteAffrows();
-                return result;
+                catch (Exception ex)
+                {
+                    LogHelper.Log.LogInfo(ex, LogHelper.LogType.Exception);
+                    return -1;
+                }
             });
         }
 
@@ -128,6 +154,11 @@ namespace FRAEquipmentParamService.Implement
                     node.Value = item.Value.Value;
                     node.CreateDT = DateTime.Now;
                     LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value?.ToString()}", LogHelper.LogType.Information, false);
+                    if (node.Flag.Equals("result", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (node.Value.ToString() == "2")
+                            LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value?.ToString()}", LogHelper.LogType.Warn, false);
+                    }
 
                     if (node.Flag.Equals("running", StringComparison.OrdinalIgnoreCase))
                     {
@@ -139,16 +170,20 @@ namespace FRAEquipmentParamService.Implement
                         else
                         {
                             LogHelper.Log.LogInfo($"{Entity.Name} receive running STOP.", LogHelper.LogType.Warn, false);
-                            Entity.GetPallet();
                             if (Entity.MES_TP_FRA_Pallet == null)
                             {
-                                LogHelper.Log.LogInfo($"{Entity.Name} Pallet Entity is NULL.", LogHelper.LogType.Exception, false);
-                                continue;
+                                LogHelper.Log.LogInfo($"{Entity.Name} Pallet Entity is NULL, Search Again.", LogHelper.LogType.Exception, false);
+                                if (!Entity.GetPallet())
+                                {
+                                    LogHelper.Log.LogInfo($"{Entity.Name} Pallet Entity is NULL, Skip current action.", LogHelper.LogType.Exception, false);
+                                    continue;
+                                }
                             }
 
                             var t1 = SaveIntoDB();
                             var t2 = SaveIntoToBeRepaired();
-
+                            t1.Start();
+                            t2.Start();
                             Task.WaitAll(t1, t2);
                             LogHelper.Log.LogInfo($"{Entity.Name} saved parameter's quantity is {t1.Result}.", LogHelper.LogType.Warn, false);
                             LogHelper.Log.LogInfo($"{Entity.Name} saved defect's quantity is {t2.Result}.", LogHelper.LogType.Warn, false);

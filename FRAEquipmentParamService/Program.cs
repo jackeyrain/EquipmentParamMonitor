@@ -28,13 +28,14 @@ namespace FRAEquipmentParamService
             {
                 LogHelper.Log.LogInfo($"Get configuration file {o.Name}", LogHelper.LogType.Information, false);
             });
+
             var loadConfig = configFileInfo.FirstOrDefault(o => o.Name.Equals("load.xlsx", StringComparison.OrdinalIgnoreCase));
             var loadData = new StationDataConvert(loadConfig.FullName).LoadDataParse();
             var loadStation = new StationLoadMonitor(loadData);
             // 上线工位绑定任务
-            // stationMonitors.Add(loadStation);
-
+            stationMonitors.Add(loadStation);
             configFileInfo.Remove(loadConfig);
+
             foreach (var file in configFileInfo)
             {
                 // 站点参数收集任务

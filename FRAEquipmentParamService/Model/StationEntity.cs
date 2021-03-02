@@ -33,7 +33,7 @@ namespace FRAEquipmentParamService.Model
             return failSet;
         }
 
-        public void GetPallet()
+        public bool GetPallet()
         {
             MES_TP_FRA_Pallet = DBAccess.Instance.Select<MES_TP_FRA_Pallet>()
                 .Where(o => o.PalletID.Equals(PalletNode.Value.ToString()) && o.LineCode.Equals(this.LineCode))
@@ -46,7 +46,9 @@ namespace FRAEquipmentParamService.Model
                     .Where(o => o.ORDER_CODE.Equals(MES_TP_FRA_Pallet.WorkOrder, StringComparison.OrdinalIgnoreCase))
                     .IncludeMany(o => o.mES_TT_APS_WORK_ORDER_ASSEMBLies.Where(p => p.ORDER_ID == o.ID))
                     .First();
+                return MES_TT_APS_WORK_ORDER != null;
             }
+            return false;
         }
 
         internal void Initialize()
