@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkOrderPrint", "WorkOrder
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentParamMonitor_DP", "EquipmentParamMonitor_DP\EquipmentParamMonitor_DP.csproj", "{DEBEEB93-D83C-46B0-8642-54B749BBBC94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FRAEquipmentParamService", "FRAEquipmentParamService\FRAEquipmentParamService.csproj", "{286BD09F-A0FA-43B7-9E4F-FADFFE3D7405}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{DEBEEB93-D83C-46B0-8642-54B749BBBC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEBEEB93-D83C-46B0-8642-54B749BBBC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEBEEB93-D83C-46B0-8642-54B749BBBC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{286BD09F-A0FA-43B7-9E4F-FADFFE3D7405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{286BD09F-A0FA-43B7-9E4F-FADFFE3D7405}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{286BD09F-A0FA-43B7-9E4F-FADFFE3D7405}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{286BD09F-A0FA-43B7-9E4F-FADFFE3D7405}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
