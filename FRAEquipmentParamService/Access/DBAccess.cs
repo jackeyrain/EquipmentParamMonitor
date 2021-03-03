@@ -13,10 +13,10 @@ namespace FRAEquipmentParamService.Access
             freeSql = new FreeSql.FreeSqlBuilder()
                 .UseConnectionString(FreeSql.DataType.SqlServer, ConfigurationManager.AppSettings["DBConnection"])
                 .UseAutoSyncStructure(true)
-                .UseMonitorCommand(o =>
-                {
-                    LogHelper.Log.LogInfo($"{o.CommandText}", LogHelper.LogType.Information);
-                })
+                //.UseMonitorCommand(o =>
+                //{
+                //    LogHelper.Log.LogInfo($"{o.CommandText}", LogHelper.LogType.Information);
+                //})
                 //,
                 //(o, p) =>
                 //{

@@ -78,10 +78,12 @@ namespace FRAEquipmentParamService.Implement
                     }
                     ).ToList();
                     var result = DBAccess.Instance.Insert<MES_FRAEQUIPPARAMLOG>().AppendData(data.OrderBy(o => o.PARAMTAG)).NoneParameter().ExecuteAffrows();
+                    LogHelper.Log.LogInfo($"{Entity.Name} insert db success.", LogHelper.LogType.Information, false);
                     return result;
                 }
                 catch (Exception ex)
                 {
+                    LogHelper.Log.LogInfo($"{Entity.Name} insert db fail.", LogHelper.LogType.Warn, false);
                     LogHelper.Log.LogInfo(ex, LogHelper.LogType.Exception);
                     return -1;
                 }
@@ -125,10 +127,12 @@ namespace FRAEquipmentParamService.Implement
                     ).ToList();
                     LogHelper.Log.LogInfo($"Ready to insert into DB repair table.");
                     var result = DBAccess.Instance.Insert<MES_TR_CIM_TOBE_REPAIRED>().AppendData(data).NoneParameter().ExecuteAffrows();
+                    LogHelper.Log.LogInfo($"{Entity.Name} insert repair success.", LogHelper.LogType.Information, false);
                     return result;
                 }
                 catch (Exception ex)
                 {
+                    LogHelper.Log.LogInfo($"{Entity.Name} insert repair fail.", LogHelper.LogType.Warn, false);
                     LogHelper.Log.LogInfo(ex, LogHelper.LogType.Exception);
                     return -1;
                 }
