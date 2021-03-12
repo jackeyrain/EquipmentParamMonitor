@@ -48,5 +48,19 @@ namespace FRAEquipmentParamService.Model
 
             return false;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public string Remark
+        {
+            get
+            {
+                var tags = TagAddress.Where(o => !string.IsNullOrEmpty(o.Value.ToString())).ToList();
+                var remark = string.Join(", ",
+                    tags.Select(o => $"{o.TagAddress.Substring(o.TagAddress.LastIndexOf(".") + 1, o.TagAddress.Length - o.TagAddress.LastIndexOf(".") - 1)}:[{o.Value.ToString()}]"));
+                return remark;
+            }
+        }
     }
 }

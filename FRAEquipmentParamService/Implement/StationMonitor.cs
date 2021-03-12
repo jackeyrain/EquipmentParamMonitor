@@ -115,14 +115,15 @@ namespace FRAEquipmentParamService.Implement
                         LOCATION = firstLocation,
                         DESCRIPTION = $"{this.Entity.Name}-{o.Name}",
                         RESULT = "NOK",
+                        PART_NO = string.Empty,
                         INSPECTED = false,
-                        REMARK = $"{o.Name}",
+                        REMARK = $"{o.Name}-{o.Remark}",
                         ADD_BY_INSPECTOR = true,
                         VALID_FLAG = true,
                         CREATE_USER = AppDomain.CurrentDomain.FriendlyName,
                         CREATE_DATE = DateTime.Now,
-                        DATA_SOURCE = 1,
-                        REPAIRE_TYPE = 6,
+                        DATA_SOURCE = 0,
+                        REPAIRE_TYPE = 4,
                     }
                     ).ToList();
                     LogHelper.Log.LogInfo($"Ready to insert into DB repair table.");
@@ -205,6 +206,7 @@ namespace FRAEquipmentParamService.Implement
             foreach (var item in this.DicParamSet.Values.Where(o => !o.Flag.Equals("PALLET", StringComparison.OrdinalIgnoreCase)))
             {
                 item.Value = null;
+                item.CreateDT = DateTime.Parse("1970-1-1 0:00:00.000");
             }
             LogHelper.Log.LogInfo($"{Entity.Name} reinitialize completed.", LogHelper.LogType.Information, false);
         }
