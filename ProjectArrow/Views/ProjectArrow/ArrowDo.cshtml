@@ -56,11 +56,11 @@
         @{
             foreach(MaterialEntity material in ViewBag.Material)
             {
-                @: material.push({ 'barcode':'@material.Barcode' })
+                @: material.push({ 'barcoderule': '@material.BarcodeRule' })
             }
             foreach(HoleEntity hole in ViewBag.Hole)
             {
-                @: hole.push({ 'barcode':'@hole.Barcode' })
+                @: hole.push({ 'barcoderule':'@hole.BarcodeRule' })
             }
         }
 
@@ -71,7 +71,7 @@
                         url: '@Url.Action("Regex")',
                         type: 'get',
                         contentType: 'json',
-                        data: { 'rule': material[materialIndex].barcode, 'barcode': $('#txtPartNumber').val() },
+                        data: { 'rule': material[materialIndex].barcoderule, 'barcode': $('#txtPartNumber').val() },
                         success: function (data) {
                             if (data.result) {
                                 $('div.alert').removeClass('alert-danger').addClass('alert-success')
@@ -120,7 +120,7 @@
                         url: '@Url.Action("Regex")',
                         type: 'get',
                         contentType: 'json',
-                        data: { 'rule': hole[holeIndex].barcode, 'barcode': $('#txtHole').val() },
+                        data: { 'rule': hole[holeIndex].barcoderule, 'barcode': $('#txtHole').val() },
                         success: function (d) {
                             if (d.result) {
                                 data.push({ 'c': 'h', 'd': $('#txtPartNumber').val() });

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace EquipmentParamMonitor.Model
 {
-    [SugarTable("MES.DP_EQUIPPARAMLOG")]
-    public class EQUIPPARAMLOG
+    [SugarTable("MES.FCEQUIPPARAMLOG")]
+    public class FCEQUIPPARAMLOG
     {
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public Int64 ID { get; set; }
@@ -20,5 +20,9 @@ namespace EquipmentParamMonitor.Model
         public string PARAMTAG { get; set; }
         public string VALUE { get; set; }
         public DateTime CREATEDATETIME { get; set; }
+        public override string ToString()
+        {
+            return $"{CARRIERID ?? ""}-{WORKORDER ?? ""}-{SEQUENCE ?? ""}-{VINCODE ?? ""}-{STATION ?? ""}-{PARAMTAG ?? ""}-{VALUE ?? ""}-{CREATEDATETIME}";
+        }
     }
 }

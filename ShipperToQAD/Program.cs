@@ -186,6 +186,8 @@ namespace ShipperToQAD
                     }
                 }
 
+                if (!loading.END_SCAN_TIME.HasValue) loading.END_SCAN_TIME = DateTime.Now;
+
                 INSEQShipper iNSEQShipper = new INSEQShipper
                 {
                     VIA_CODE = "CTIIM", // THIS FIELD IS A HARDCODED VALUE

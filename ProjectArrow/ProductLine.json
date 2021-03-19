@@ -1,14 +1,27 @@
 [
   {
-    "ProductLine": "HP1"
+    "Id": 408,
+    "ProductLine": "HP1",
+    "MoldTagAddress": ""
   },
   {
-    "ProductLine": "HP2"
+    "Id": 425,
+    "ProductLine": "HP2",
+    "MoldTagAddress": ""
   },
   {
-    "ProductLine": "HP3"
+    "Id": 409,
+    "ProductLine": "HP3",
+    "MoldTagAddress": ""
   },
   {
-    "ProductLine": "HP4"
+    "Id": 427,
+    "ProductLine": "HP4",
+    "MoldTagAddress": "ns=2;s=HP4MIX.HP4MIX.HP4.SVs.Parts.sv_sMoldNumber"
+  },
+  {
+    "Id": 385,
+    "ProductLine": "HP5",
+    "MoldTagAddress": ""
   }
 ]

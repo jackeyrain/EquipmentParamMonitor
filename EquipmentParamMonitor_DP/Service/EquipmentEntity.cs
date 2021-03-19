@@ -18,23 +18,15 @@ namespace EquipmentParamMonitor.Service
         private Jakware.UaClient.JakwareUaClient opcClient = new Jakware.UaClient.JakwareUaClient();
         private TT_PCS_CARRIER_CHECK_MANAGER PCS_CARRIER_CHECK_MANAGER = new TT_PCS_CARRIER_CHECK_MANAGER();
         private TT_APS_WORK_ORDER_MANAGER APS_WORK_ORDER_MANAGER = new TT_APS_WORK_ORDER_MANAGER();
-        private EQUIPPARAMLOG_MANAGER EQUIPPARAMLOG_MANAGER = new EQUIPPARAMLOG_MANAGER();
+        private FCEQUIPPARAMLOG_MANAGER EQUIPPARAMLOG_MANAGER = new FCEQUIPPARAMLOG_MANAGER();
         private List<EQUIPMENT_VARIABLE> equipParams { get; set; }
         private List<NodeId> nodeIdSet { get; set; }
         private NodeId CarrierID { get; set; }
-        private List<EQUIPPARAMLOG> logSet { get; set; }
+        private List<FCEQUIPPARAMLOG> logSet { get; set; }
         private bool logEndable { set; get; }
 
         private CARRIERWORKORDER_INFO carrierInfo;
 
-        private volatile bool EMPTYFLAGRUNNING = false;
-        private string STATION110INSTATION = ConfigurationManager.AppSettings["STATION110INSTATION"];
-        private string EMTPYCARRIERSIGNAL = ConfigurationManager.AppSettings["EMTPYCARRIERSIGNAL"];
-        #region
-
-        #endregion
-
-        private string StartTag { get; set; }
         public EquipmentEntity(string name, List<Model.EQUIPMENT_VARIABLE> equipParams)
         {
             opcClient.connStr = ConfigurationManager.AppSettings["OPCSERVER"];
@@ -51,7 +43,7 @@ namespace EquipmentParamMonitor.Service
             opcClient.StartSubscription();
             // ns=2;s=CKPT_IP_LINE.CKPT_IP_LINE.Global
             var nodeSet = this.equipParams.Select(o => NodeId.Parse($"ns=2;s={o.GROUP_NAME}.{o.CODE}.{o.PARAMNAME}"));
-            CarrierID = nodeSet.FirstOrDefault(o => o.ToString().ToLower().Contains("tomes.carrierid"));
+            CarrierID = nodeSet.FirstOrDefault(o => o.ToString().ToLower().Contains(".palletid"));
             opcClient.AddMonitorNodeId(nodeSet.ToArray());
             //nodeSet.ToList().ForEach(o =>
             //{
@@ -104,7 +96,7 @@ namespace EquipmentParamMonitor.Service
                             return;
                         }
                         this.logEndable = true;
-                        this.logSet = new List<EQUIPPARAMLOG>();
+                        this.logSet = new List<FCEQUIPPARAMLOG>();
                         this.carrierInfo.workOrder = workOrderInfo.ORDER_CODE;
                         this.carrierInfo.workOrderSeq = workOrderInfo.ORDER_SEQ.ToString();
                         this.carrierInfo.workOrderVin = workOrderInfo.VIN_CODE;
@@ -116,6 +108,8 @@ namespace EquipmentParamMonitor.Service
                     {
                         if (this.logSet != null && this.logSet.Count > 0)
                         {
+                            this.logSet.ForEach(o => Console.WriteLine(o));
+
                             var count = EQUIPPARAMLOG_MANAGER.AddBluk(this.logSet);
                             LogHelper.Log.LogInfo($"{EntityName}:{this.carrierInfo.carrierIDNumber} is finish. Count is {count}");
                         }
@@ -127,7 +121,7 @@ namespace EquipmentParamMonitor.Service
                 if (!this.logEndable)
                     return;
 
-                this.logSet.AddRange(e.JakwareDataChanges.Where(o => o.IsGood).Select(o => new EQUIPPARAMLOG
+                this.logSet.AddRange(e.JakwareDataChanges.Where(o => o.IsGood).Select(o => new FCEQUIPPARAMLOG
                 {
                     CARRIERID = this.carrierInfo.carrierIDNumber,
                     WORKORDER = this.carrierInfo.workOrder,
@@ -135,7 +129,7 @@ namespace EquipmentParamMonitor.Service
                     VINCODE = this.carrierInfo.workOrderVin,
                     PARAMTAG = o.MonitoredItem.NodeId.ToString(),
                     STATION = this.carrierInfo.station,
-                    VALUE = o.Value.Value.ToString(),
+                    VALUE = o.Value.Value != null ? o.Value.Value.ToString() : string.Empty,
                     CREATEDATETIME = DateTime.Now,
                 }));
             }
@@ -149,7 +143,7 @@ namespace EquipmentParamMonitor.Service
         {
             try
             {
-                int a_index = context.IndexOf("Station");
+                int a_index = context.IndexOf("WSFC_CN");
                 int b_index = context.IndexOf(".", a_index);
                 var station = context.Substring(a_index, b_index - a_index);
                 return station;

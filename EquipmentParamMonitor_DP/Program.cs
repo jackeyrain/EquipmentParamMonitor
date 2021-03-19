@@ -46,7 +46,7 @@ namespace EquipmentParamMonitor
                 var equipParams = manager.GetEquipmentVariable(equipment.Select(o => o.NAME).ToArray());
                 equipParams.ForEach(o =>
                 {
-                    LogHelper.Log.LogInfo(o.NAME);
+                    LogHelper.Log.LogInfo(o.PARAMNAME);
                 });
                 entity.Add(new EquipmentEntity(string.Join("|", equipment.Select(o => o.NAME)), equipParams));
             }

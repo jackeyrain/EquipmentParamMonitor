@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Code\EquipmentMonitor.cs" />
+    <Compile Include="App_Code\ProjectArrowMonitor.cs" />
     <Compile Include="Controllers\GlobalExceptionController.cs" />
     <Compile Include="Entity\HoseXmlEntity.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -154,10 +155,13 @@
     <Compile Include="Controllers\ProjectArrowController.cs" />
     <Compile Include="Entity\HoleEntity.cs" />
     <Compile Include="Entity\MaterialEntity.cs" />
+    <Compile Include="Entity\ProductLineEntity.cs" />
     <Compile Include="Entity\ProjectArrow.cs" />
     <Compile Include="Entity\SelectEntity.cs" />
     <Compile Include="Entity\TM_BAS_ASSEMBLY_LINE.cs" />
     <Compile Include="Entity\TM_BAS_EQUIPMENT.cs" />
+    <Compile Include="Entity\TM_BAS_MOULD_PART.cs" />
+    <Compile Include="Entity\TM_BAS_PART.cs" />
     <Compile Include="Entity\TM_BAS_RAW_PACKAGE.cs" />
     <Compile Include="Entity\TM_BAS_RAW_PACKAGE_DETAIL.cs" />
     <Compile Include="Entity\TS_SYS_USER.cs" />

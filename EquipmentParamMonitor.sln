@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSDataTransferSuper", "WSDa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkOrderPrint", "WorkOrderPrint\WorkOrderPrint.csproj", "{F40ED8BE-D7C4-4342-B12C-BFBC291C57C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentParamMonitor_DP", "EquipmentParamMonitor_DP\EquipmentParamMonitor_DP.csproj", "{DEBEEB93-D83C-46B0-8642-54B749BBBC94}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentParamMonitor_FC", "EquipmentParamMonitor_DP\EquipmentParamMonitor_FC.csproj", "{DEBEEB93-D83C-46B0-8642-54B749BBBC94}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FRAEquipmentParamService", "FRAEquipmentParamService\FRAEquipmentParamService.csproj", "{286BD09F-A0FA-43B7-9E4F-FADFFE3D7405}"
 EndProject

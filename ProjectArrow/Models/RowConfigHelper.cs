@@ -17,9 +17,9 @@ namespace ProjectArrow.Models
                               left join mes.TM_BAS_RAW_PACKAGE b on a.PARTNUMBER = b.NAME and b.PACKAGE_TYPE = 70
                               left join mes.TM_BAS_RAW_PACKAGE_DETAIL c on b.FID = c.PACKAGE_FID
                               where a.ID in ( {string.Join(",", tasks.Select(o => o.ID).ToArray())} )")
-                .ToList(o => new MaterialEntity { BarcodeRule = o.BARCODE });
-
-            return data;
+                .ToList();
+            var entity = data.Select(o => new MaterialEntity { BarcodeRule = o.BARCODE }).ToList();
+            return entity;
         }
 
         public List<HoleEntity> GetHole(int equipId)

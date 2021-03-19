@@ -21,7 +21,8 @@ namespace ProjectArrow
 
             try
             {
-                EquipmentMonitor.StartMonitor();
+                //EquipmentMonitor.StartMonitor();
+                ProjectArrowMonitor.StartMonitor();
             }
             catch (Exception e)
             {

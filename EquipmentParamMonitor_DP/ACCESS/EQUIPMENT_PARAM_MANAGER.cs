@@ -15,20 +15,20 @@ namespace EquipmentParamMonitor.ACCESS
         {
             var result = new List<TM_BAS_EQUIPMENT[]>();
             // 获取主工位设备
-            var stationSet = this.GetList(o => (ConfigurationManager.AppSettings["EXTARLOCATION"].Split(new[] { ',' }).Contains(o.NAME)));
-            foreach (var station in stationSet)
+            var equipSet = this.GetList(o => (ConfigurationManager.AppSettings["EXTARLOCATION"].Split(new[] { ',' }).Contains(o.NAME)));
+            foreach (var station in equipSet)
             {
-                var relationStation = this.GetList(o =>
+                var relationEquip = this.GetList(o =>
                    o.EQUIP_TYPE.Equals("1", StringComparison.OrdinalIgnoreCase) &&
                    o.LOCATION.Equals(station.NAME, StringComparison.OrdinalIgnoreCase));
                 // 将本工位设备加入
-                relationStation.Insert(0, station);
+                relationEquip.Insert(0, station);
 
                 // TODO: for testing
                 //if (!station.CODE.Contains("110"))
                 //    continue;
 
-                result.Add(relationStation.ToArray());
+                result.Add(relationEquip.ToArray());
             }
             return result;
         }

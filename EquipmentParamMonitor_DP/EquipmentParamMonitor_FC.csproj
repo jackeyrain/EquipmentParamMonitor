@@ -70,13 +70,13 @@
   <ItemGroup>
     <Compile Include="ACCESS\DbContext.cs" />
     <Compile Include="ACCESS\EQUIPMENT_PARAM_MANAGER.cs" />
-    <Compile Include="ACCESS\EQUIPPARAMLOG_MANAGER.cs" />
+    <Compile Include="ACCESS\FC.cs" />
     <Compile Include="ACCESS\TT_APS_WORK_ORDER_MANAGER.cs" />
     <Compile Include="ACCESS\TT_PCS_CARRIER_CHECK_MANAGER.cs" />
     <Compile Include="LogHelper.cs" />
     <Compile Include="Model\CARRIERWORKORDER_INFO.cs" />
     <Compile Include="Model\EQUIPMENT_VARIABLE.cs" />
-    <Compile Include="Model\EQUIPPARAMLOG.cs" />
+    <Compile Include="Model\FCEQUIPPARAMLOG.cs" />
     <Compile Include="Model\TT_APS_WORK_ORDER.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>

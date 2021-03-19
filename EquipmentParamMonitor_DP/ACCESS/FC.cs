@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace EquipmentParamMonitor.ACCESS
 {
-    public class EQUIPPARAMLOG_MANAGER : DbContext<EQUIPPARAMLOG>
+    public class FCEQUIPPARAMLOG_MANAGER : DbContext<FCEQUIPPARAMLOG>
     {
-        public int AddBluk(List<EQUIPPARAMLOG> logSet)
+        public int AddBluk(List<FCEQUIPPARAMLOG> logSet)
         {
             return this.Db.Insertable(logSet.ToArray()).ExecuteCommand();
         }

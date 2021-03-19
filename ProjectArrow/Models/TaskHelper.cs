@@ -66,5 +66,19 @@ namespace ProjectArrow.Models
                     .ExecuteAffrows() > 0;
             });
         }
+
+        public MES_ProjectArrow GetLastMoldNumber(long equipId)
+        {
+            var lastData = DBHelper.Db.Select<MES_ProjectArrow>()
+                 .Where(o => o.VALID_FLAG.Value && o.EQUIPID.Value == equipId)
+                 .OrderByDescending(o => o.ID)
+                 .First();
+            return lastData;
+        }
+
+        public int AddProjectArrow(MES_ProjectArrow obj)
+        {
+            return DBHelper.Db.Insert<MES_ProjectArrow>().AppendData(obj).ExecuteAffrows();
+        }
     }
 }
