@@ -25,5 +25,10 @@ namespace FRAEquipmentParamService.Implement
         {
             throw new NotImplementedException();
         }
+
+        public string WriteValue(string nodeId, int value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

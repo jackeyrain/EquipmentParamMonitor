@@ -1,6 +1,7 @@
 ﻿using DPToleranceMonitorService.Model.DB;
 using FRAEquipmentParamService.Access;
 using FRAEquipmentParamService.Model;
+using Jakware.UaClient;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace FRAEquipmentParamService.Implement
 {
     public class StationLoadMonitor : IDisposable, IStation
     {
+        public LoadStationEntity Entity { get; set; }
+
         private Jakware.UaClient.JakwareUaClient jakware;
         private ConcurrentDictionary<string, NodeEntity> DicParamSet;
         public StationLoadMonitor(LoadStationEntity loadStationEntity)
@@ -23,8 +26,6 @@ namespace FRAEquipmentParamService.Implement
             this.jakware = new Jakware.UaClient.JakwareUaClient();
             DicParamSet = new ConcurrentDictionary<string, NodeEntity>();
         }
-
-        public LoadStationEntity Entity { get; }
 
         public void Dispose()
         {
@@ -118,6 +119,12 @@ namespace FRAEquipmentParamService.Implement
                     }
                 }
             });
+        }
+
+        public string WriteValue(string nodeId, int value)
+        {
+            var result = jakware.Write(new WriteDataValue { NodeId = NodeId.Parse(nodeId), Value = value });
+            return result?.First().Error;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace FRAEquipmentParamService.Implement
                     entity.ParamSet.Add(param);
                 }
 
-                param.TagAddress.Add(new NodeEntity { TagAddress = d["TAG_ADDRESS"].ToString(), Flag = d["FLAG"].ToString() });
+                param.TagAddress.Add(new NodeEntity { TagAddress = d["TAG_ADDRESS"].ToString(), Flag = d["FLAG"].ToString(), GuidLine = d["GUIDLINE"].ToString() });
                 previousParam = d["PARAMETER_NAME"].ToString();
             }
 

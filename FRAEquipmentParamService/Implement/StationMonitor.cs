@@ -1,6 +1,7 @@
 ﻿using DPToleranceMonitorService.Model.DB;
 using FRAEquipmentParamService.Access;
 using FRAEquipmentParamService.Model;
+using Jakware.UaClient;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -144,59 +145,66 @@ namespace FRAEquipmentParamService.Implement
         {
             await new TaskFactory().StartNew(() =>
             {
-                foreach (var item in e.JakwareDataChanges)
+                try
                 {
-                    if (!item.IsGood) continue;
-
-                    var tagAddress = item.MonitoredItem.NodeId.ToString();
-                    this.DicParamSet.TryGetValue(tagAddress, out var node);
-                    if (node == null)
+                    foreach (var item in e.JakwareDataChanges)
                     {
-                        LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress} wasn't registed.", LogHelper.LogType.Error, false);
-                        continue;
-                    }
+                        if (!item.IsGood) continue;
 
-                    node.Value = item.Value.Value;
-                    node.CreateDT = DateTime.Now;
-                    LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value?.ToString()}", LogHelper.LogType.Information, false);
-                    if (node.Flag.Equals("result", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (node.Value.ToString() == "2")
-                            LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value?.ToString()}", LogHelper.LogType.Warn, false);
-                    }
-
-                    if (node.Flag.Equals("running", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (Convert.ToBoolean(node.Value))
+                        var tagAddress = item.MonitoredItem.NodeId.ToString();
+                        this.DicParamSet.TryGetValue(tagAddress, out var node);
+                        if (node == null)
                         {
-                            LogHelper.Log.LogInfo($"{Entity.Name} receive running START.", LogHelper.LogType.Warn, false);
-                            Entity.GetPallet();
+                            LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress} wasn't registed.", LogHelper.LogType.Error, false);
+                            continue;
                         }
-                        else
+
+                        node.Value = item.Value.Value;
+                        node.CreateDT = DateTime.Now;
+                        LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value?.ToString()}", LogHelper.LogType.Information, false);
+                        if (node.Flag.Equals("result", StringComparison.OrdinalIgnoreCase))
                         {
-                            LogHelper.Log.LogInfo($"{Entity.Name} receive running STOP.", LogHelper.LogType.Warn, false);
-                            if (Entity.MES_TP_FRA_Pallet == null)
+                            if (node.Value.ToString() == "2")
+                                LogHelper.Log.LogInfo($"{Entity.Name}-{tagAddress}-{node.Value?.ToString()}", LogHelper.LogType.Warn, false);
+                        }
+
+                        if (node.Flag.Equals("running", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (Convert.ToBoolean(node.Value))
                             {
-                                LogHelper.Log.LogInfo($"{Entity.Name} Pallet Entity is NULL, Search Again.", LogHelper.LogType.Exception, false);
-                                if (!Entity.GetPallet())
-                                {
-                                    LogHelper.Log.LogInfo($"{Entity.Name} Pallet Entity is NULL, Skip current action.", LogHelper.LogType.Exception, false);
-                                    continue;
-                                }
+                                LogHelper.Log.LogInfo($"{Entity.Name} receive running START.", LogHelper.LogType.Warn, false);
+                                Entity.GetPallet();
                             }
+                            else
+                            {
+                                LogHelper.Log.LogInfo($"{Entity.Name} receive running STOP.", LogHelper.LogType.Warn, false);
+                                if (Entity.MES_TP_FRA_Pallet == null)
+                                {
+                                    LogHelper.Log.LogInfo($"{Entity.Name} Pallet Entity is NULL, Search Again.", LogHelper.LogType.Exception, false);
+                                    if (!Entity.GetPallet())
+                                    {
+                                        LogHelper.Log.LogInfo($"{Entity.Name} Pallet Entity is NULL, Skip current action.", LogHelper.LogType.Exception, false);
+                                        continue;
+                                    }
+                                }
 
-                            var t1 = SaveIntoDB();
-                            var t2 = SaveIntoToBeRepaired();
-                            t1.Start();
-                            t2.Start();
-                            Task.WaitAll(t1, t2);
-                            LogHelper.Log.LogInfo($"{Entity.Name} saved parameter's quantity is {t1.Result}.", LogHelper.LogType.Warn, false);
-                            LogHelper.Log.LogInfo($"{Entity.Name} saved defect's quantity is {t2.Result}.", LogHelper.LogType.Warn, false);
+                                var t1 = SaveIntoDB();
+                                var t2 = SaveIntoToBeRepaired();
+                                t1.Start();
+                                t2.Start();
+                                Task.WaitAll(t1, t2);
+                                LogHelper.Log.LogInfo($"{Entity.Name} saved parameter's quantity is {t1.Result}.", LogHelper.LogType.Warn, false);
+                                LogHelper.Log.LogInfo($"{Entity.Name} saved defect's quantity is {t2.Result}.", LogHelper.LogType.Warn, false);
 
-                            Entity.Initialize();
-                            this.Reinitialize();
+                                Entity.Initialize();
+                                this.Reinitialize();
+                            }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Log.LogInfo(ex, LogHelper.LogType.Exception);
                 }
             });
         }
@@ -209,6 +217,14 @@ namespace FRAEquipmentParamService.Implement
                 item.CreateDT = DateTime.Parse("1970-1-1 0:00:00.000");
             }
             LogHelper.Log.LogInfo($"{Entity.Name} reinitialize completed.", LogHelper.LogType.Information, false);
+        }
+
+        public string WriteValue(string nodeId, int value)
+        {
+            var result = jakware.Write(new WriteDataValue { NodeId = NodeId.Parse(nodeId), Value = value });
+            if (result.Count() <= 0)
+                return string.Empty;
+            return result.FirstOrDefault()?.Error;
         }
     }
 }

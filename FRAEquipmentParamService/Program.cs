@@ -1,11 +1,15 @@
 ﻿using DPToleranceMonitorService.Model.DB;
 using FRAEquipmentParamService.Access;
 using FRAEquipmentParamService.Implement;
+using FRAEquipmentParamService.Interface;
 using FRAEquipmentParamService.Model;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.ServiceModel;
+using System.ServiceModel.Description;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +18,9 @@ namespace FRAEquipmentParamService
     class Program
     {
         // 任务集合
-        static List<IStation> stationMonitors = new List<IStation>();
+        public static List<IStation> stationMonitors = new List<IStation>();
+        static List<StationEntity> stationEntity = new List<StationEntity>();
+
         static void Main(string[] args)
         {
             LogHelper.Log.LogInfo("FRA Equipment Monitor is Starting.", LogHelper.LogType.Information, false);
@@ -40,11 +46,13 @@ namespace FRAEquipmentParamService
             {
                 // 站点参数收集任务
                 var data = new StationDataConvert(file.FullName).DataParse();
+                stationEntity.Add(data);
                 var stationMonitor = new StationMonitor(data);
                 stationMonitors.Add(stationMonitor);
             }
             // 开始执行任务
             stationMonitors.ForEach(o => o.Initialize());
+            new ServiceHostServer(stationEntity).Start();
 
             var command = string.Empty;
             do

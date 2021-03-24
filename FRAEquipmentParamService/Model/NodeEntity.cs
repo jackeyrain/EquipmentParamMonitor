@@ -22,6 +22,7 @@ namespace FRAEquipmentParamService.Model
 
         public string TagAddress { get; set; }
         public string Flag { get; set; }
+        public string GuidLine { get; set; }
 
         [Newtonsoft.Json.JsonIgnore]
         public object Value
