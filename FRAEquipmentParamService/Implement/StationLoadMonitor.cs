@@ -121,7 +121,7 @@ namespace FRAEquipmentParamService.Implement
             });
         }
 
-        public string WriteValue(string nodeId, int value)
+        public string WriteValue(string nodeId, dynamic value)
         {
             var result = jakware.Write(new WriteDataValue { NodeId = NodeId.Parse(nodeId), Value = value });
             return result?.First().Error;

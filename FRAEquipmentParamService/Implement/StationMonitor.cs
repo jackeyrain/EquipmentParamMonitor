@@ -219,7 +219,7 @@ namespace FRAEquipmentParamService.Implement
             LogHelper.Log.LogInfo($"{Entity.Name} reinitialize completed.", LogHelper.LogType.Information, false);
         }
 
-        public string WriteValue(string nodeId, int value)
+        public string WriteValue(string nodeId, dynamic value)
         {
             var result = jakware.Write(new WriteDataValue { NodeId = NodeId.Parse(nodeId), Value = value });
             if (result.Count() <= 0)

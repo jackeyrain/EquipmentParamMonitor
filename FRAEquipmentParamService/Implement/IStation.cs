@@ -11,6 +11,6 @@ namespace FRAEquipmentParamService.Implement
     {
         void Initialize();
 
-        string WriteValue(string nodeId, int value);
+        string WriteValue(string nodeId, dynamic value);
     }
 }

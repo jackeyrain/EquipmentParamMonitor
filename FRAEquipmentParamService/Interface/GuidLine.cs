@@ -45,7 +45,7 @@ namespace FRAEquipmentParamService.Interface
                         continue;
 
                     var resultItem = d_p.TagAddress.FirstOrDefault(o => o.Flag.Equals("result", StringComparison.OrdinalIgnoreCase));
-                    if (resultItem == null)
+                    if (resultItem == null || string.IsNullOrEmpty(resultItem.GuidLine))
                         continue;
 
                     var station = Program.stationMonitors.FirstOrDefault(o =>
@@ -57,7 +57,7 @@ namespace FRAEquipmentParamService.Interface
                     if (station == null)
                         continue;
 
-                    var result = station.WriteValue(resultItem.GuidLine, 2);
+                    var result = station.WriteValue(resultItem.GuidLine, (sbyte)2);
                     if (!string.IsNullOrEmpty(result))
                         return result;
 
@@ -66,7 +66,7 @@ namespace FRAEquipmentParamService.Interface
 
                 return string.Join(",", returnMsg);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }
