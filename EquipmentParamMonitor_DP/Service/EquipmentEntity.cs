@@ -26,12 +26,17 @@ namespace EquipmentParamMonitor.Service
         private bool logEndable { set; get; }
 
         private CARRIERWORKORDER_INFO carrierInfo;
-
+        // 缓存变量
+        private Dictionary<string, long> cacheParam = new Dictionary<string, long>();
         public EquipmentEntity(string name, List<Model.EQUIPMENT_VARIABLE> equipParams)
         {
             opcClient.connStr = ConfigurationManager.AppSettings["OPCSERVER"];
             nodeIdSet = new List<NodeId>();
             this.equipParams = equipParams;
+            Array.ForEach(this.equipParams.ToArray(), o =>
+            {
+                cacheParam[$"ns=2;s={o.GROUP_NAME}.{o.CODE}.{o.PARAMNAME}"] = o.PARAMID;
+            });
             this.EntityName = name;
         }
 
@@ -128,6 +133,7 @@ namespace EquipmentParamMonitor.Service
                     SEQUENCE = this.carrierInfo.workOrderSeq,
                     VINCODE = this.carrierInfo.workOrderVin,
                     PARAMTAG = o.MonitoredItem.NodeId.ToString(),
+                    PARAMID = this.GetParamID(o.MonitoredItem.NodeId.ToString()),
                     STATION = this.carrierInfo.station,
                     VALUE = o.Value.Value != null ? o.Value.Value.ToString() : string.Empty,
                     CREATEDATETIME = DateTime.Now,
@@ -153,7 +159,14 @@ namespace EquipmentParamMonitor.Service
                 return string.Empty;
             }
         }
-
+        public long GetParamID(string key)
+        {
+            if (this.cacheParam.ContainsKey(key))
+            {
+                return this.cacheParam[key];
+            }
+            return 0;
+        }
         public void Dispose()
         {
             opcClient.StopSubscription();

@@ -12,6 +12,7 @@ namespace EquipmentParamMonitor.Model
         public string GROUP_NAME { get; set; }
         public string CODE { get; set; }
         public int CLIENT_HANDLE { set; get; }
+        public long PARAMID { get; set; }
         public string PARAMNAME { set; get; }
         public string PARAMCODE { set; get; }
         public string DESCRIPTION { set; get; }
