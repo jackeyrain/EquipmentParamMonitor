@@ -22,7 +22,7 @@ namespace FRAEquipmentParamService.Interface
 
         public void Start()
         {
-            Uri address = new Uri($"http://localhost:{ConfigurationManager.AppSettings["ServicePort"]}/Guidline");
+            Uri address = new Uri($"http://{ConfigurationManager.AppSettings["ServicePort"]}/Guidline");
             LogHelper.Log.LogInfo(string.Format("WCF Start on: {0}", address));
             host = new ServiceHost(typeof(GuidLine), address);
             ServiceMetadataBehavior behaviour = new ServiceMetadataBehavior();
@@ -37,7 +37,7 @@ namespace FRAEquipmentParamService.Interface
 
         public void Stop()
         {
-            // m_Host?.Close();
+            host?.Close();
         }
     }
 }

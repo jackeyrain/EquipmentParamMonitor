@@ -55,7 +55,7 @@ namespace EquipmentParamMonitor.ACCESS
         {
             string equipSet = string.Join("','", equipCode);
             equipSet = "'" + equipSet + "'";
-            string sql = $@"SELECT a.NAME, a.GROUP_NAME, a.CODE, b.CLIENT_HANDLE, b.NAME 'PARAMNAME', b.CODE 'PARAMCODE', b.DESCRIPTION, b.VARIABLE_TYPE, b.DATA_TYPE
+            string sql = $@"SELECT a.NAME, a.GROUP_NAME, a.CODE, b.CLIENT_HANDLE, b.ID 'PARAMID', b.NAME 'PARAMNAME', b.CODE 'PARAMCODE', b.DESCRIPTION, b.VARIABLE_TYPE, b.DATA_TYPE
                             FROM MES.TM_BAS_EQUIPMENT a LEFT JOIN MES.TM_BAS_EQUIPMENT_VARIABLE b
                             ON a.ID = b.EQUIP_ID WHERE a.NAME in ({equipSet})";
             var result = this.Db.Ado.SqlQuery<EQUIPMENT_VARIABLE>(sql);

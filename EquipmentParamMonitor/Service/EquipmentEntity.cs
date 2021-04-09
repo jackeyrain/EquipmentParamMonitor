@@ -30,6 +30,9 @@ namespace EquipmentParamMonitor.Service
         private volatile bool EMPTYFLAGRUNNING = false;
         private string STATION110INSTATION = ConfigurationManager.AppSettings["STATION110INSTATION"];
         private string EMTPYCARRIERSIGNAL = ConfigurationManager.AppSettings["EMTPYCARRIERSIGNAL"];
+        // 缓存变量
+        private Dictionary<string, long> cacheParam = new Dictionary<string, long>();
+
         #region
 
         #endregion
@@ -40,6 +43,11 @@ namespace EquipmentParamMonitor.Service
             opcClient.connStr = ConfigurationManager.AppSettings["OPCSERVER"];
             nodeIdSet = new List<NodeId>();
             this.equipParams = equipParams;
+            Array.ForEach(this.equipParams.ToArray(), o =>
+           {
+               cacheParam[$"ns=2;s={o.GROUP_NAME}.{o.CODE}.{o.PARAMNAME}"] = o.PARAMID;
+           });
+
             this.EntityName = name;
         }
 
@@ -142,6 +150,7 @@ namespace EquipmentParamMonitor.Service
                     SEQUENCE = this.carrierInfo.workOrderSeq,
                     VINCODE = this.carrierInfo.workOrderVin,
                     PARAMTAG = o.MonitoredItem.NodeId.ToString(),
+                    PARAMID = this.GetParamID(o.MonitoredItem.NodeId.ToString()),
                     STATION = this.carrierInfo.station,
                     VALUE = o.Value.Value.ToString(),
                     CREATEDATETIME = DateTime.Now,
@@ -222,6 +231,15 @@ namespace EquipmentParamMonitor.Service
                 conn.Close();
             }
             return true;
+        }
+
+        public long GetParamID(string key)
+        {
+            if (this.cacheParam.ContainsKey(key))
+            {
+                return this.cacheParam[key];
+            }
+            return 0;
         }
 
         public void Dispose()

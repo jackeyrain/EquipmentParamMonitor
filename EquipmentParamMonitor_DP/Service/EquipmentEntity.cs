@@ -22,6 +22,7 @@ namespace EquipmentParamMonitor.Service
         private List<EQUIPMENT_VARIABLE> equipParams { get; set; }
         private List<NodeId> nodeIdSet { get; set; }
         private NodeId CarrierID { get; set; }
+        private NodeId Complete { get; set; }
         private List<FCEQUIPPARAMLOG> logSet { get; set; }
         private bool logEndable { set; get; }
 
@@ -49,6 +50,7 @@ namespace EquipmentParamMonitor.Service
             // ns=2;s=CKPT_IP_LINE.CKPT_IP_LINE.Global
             var nodeSet = this.equipParams.Select(o => NodeId.Parse($"ns=2;s={o.GROUP_NAME}.{o.CODE}.{o.PARAMNAME}"));
             CarrierID = nodeSet.FirstOrDefault(o => o.ToString().ToLower().Contains(".palletid"));
+            Complete = nodeSet.FirstOrDefault(o => o.ToString().ToLower().Contains(".cyclstat"));
             opcClient.AddMonitorNodeId(nodeSet.ToArray());
             //nodeSet.ToList().ForEach(o =>
             //{
@@ -67,6 +69,9 @@ namespace EquipmentParamMonitor.Service
             {
                 var carrier = e.JakwareDataChanges.FirstOrDefault(o =>
                             o.MonitoredItem.NodeId.ToString().Equals(CarrierID.ToString(), StringComparison.OrdinalIgnoreCase));
+                var complete = e.JakwareDataChanges.FirstOrDefault(o =>
+                            o.MonitoredItem.NodeId.ToString().Equals(Complete.ToString(), StringComparison.OrdinalIgnoreCase));
+
                 if (carrier != null && carrier.IsGood)
                 {
                     if (!carrier.Value.Value.ToString().Equals("0"))
@@ -109,7 +114,23 @@ namespace EquipmentParamMonitor.Service
 
                         LogHelper.Log.LogInfo($"{this.EntityName}:{this.carrierInfo.carrierIDNumber} is start.");
                     }
-                    else if (this.logEndable)
+                    //else if (this.logEndable)
+                    //{
+                    //    if (this.logSet != null && this.logSet.Count > 0)
+                    //    {
+                    //        this.logSet.ForEach(o => Console.WriteLine(o));
+
+                    //        var count = EQUIPPARAMLOG_MANAGER.AddBluk(this.logSet);
+                    //        LogHelper.Log.LogInfo($"{EntityName}:{this.carrierInfo.carrierIDNumber} is finish. Count is {count}");
+                    //    }
+                    //    this.logEndable = false;
+                    //    this.carrierInfo = new CARRIERWORKORDER_INFO();
+                    //}
+                }
+
+                if (complete != null && complete.IsGood && this.logEndable)
+                {
+                    if (!complete.Value.Value.ToString().Equals("0"))
                     {
                         if (this.logSet != null && this.logSet.Count > 0)
                         {

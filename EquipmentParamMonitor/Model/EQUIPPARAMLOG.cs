@@ -17,6 +17,7 @@ namespace EquipmentParamMonitor.Model
         public string SEQUENCE { get; set; }
         public string VINCODE { get; set; }
         public string STATION { get; set; }
+        public long PARAMID { get; set; }
         public string PARAMTAG { get; set; }
         public string VALUE { get; set; }
         public DateTime CREATEDATETIME { get; set; }
