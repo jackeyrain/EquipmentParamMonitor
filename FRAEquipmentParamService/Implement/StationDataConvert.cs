@@ -56,6 +56,9 @@ namespace FRAEquipmentParamService.Implement
                     case "PALLETID_TAG":
                         entity.PalletNode = new NodeEntity { TagAddress = d[1].ToString(), Flag = "PALLET" };
                         break;
+                    case "PART_TYPE":
+                        entity.PartType = new NodeEntity { TagAddress = d[1].ToString(), Flag = "PARTTYPE" };
+                        break;
                 }
             }
 

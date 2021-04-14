@@ -19,6 +19,7 @@ namespace FRAEquipmentParamService.Model
         public List<ParamEntity> ParamSet { get; set; }
         public NodeEntity RunningNode { get; set; }
         public NodeEntity PalletNode { get; set; }
+        public NodeEntity PartType { get; set; }
 
         public string LineCode { get; set; }
 

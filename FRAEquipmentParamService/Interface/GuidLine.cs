@@ -15,15 +15,36 @@ namespace FRAEquipmentParamService.Interface
     {
         public string SendToGuidLine(string order_code)
         {
+            LogHelper.Log.LogInfo($"WCF Interface Receive {order_code}", LogHelper.LogType.Information);
             try
             {
                 var repairs = DBAccess.Instance.Select<MES_TR_CIM_TOBE_REPAIRED>().Where(o => o.ORDER_CODE.Equals(order_code)).ToList();
                 var data = ServiceHostServer.StationEntities;
 
+                LogHelper.Log.LogInfo($"{order_code} defect items' quantity - {repairs.Count}", LogHelper.LogType.Information);
+
                 if (repairs.Count <= 0)
                 {
                     return $"{order_code} is Good Part.";
                 }
+
+                var assembly = repairs.FirstOrDefault().ASSEMBLY_LINE;
+                var partType = 0;
+                switch (assembly)
+                {
+                    case "RFWS":
+                    case "RRWS":
+                        partType = 1;
+                        break;
+                    case "LFWS":
+                    case "LRWS":
+                        partType = 2;
+                        break;
+                    default:
+                        partType = 0;
+                        break;
+                }
+
                 // STATION150-WeldResult_031-Depth:[509], Energy:[94], MeanPower:[0.085], Pass:[2], Robot:[6], Weld_No:[31]
                 List<string> returnMsg = new List<string>();
 
@@ -56,18 +77,21 @@ namespace FRAEquipmentParamService.Interface
                     });
                     if (station == null)
                         continue;
-
+                    // 写入defect position
                     var result = station.WriteValue(resultItem.GuidLine, (sbyte)2);
                     if (!string.IsNullOrEmpty(result))
                         return result;
-
+                    // 写入part type
+                    result = station.WriteValue(((StationMonitor)station).Entity.PartType.TagAddress, (Int32)partType);
+                    LogHelper.Log.LogInfo($"{order_code} - Part Type: {partType}", LogHelper.LogType.Information);
                     returnMsg.Add(_position);
                 }
-
+                LogHelper.Log.LogInfo($"{order_code} - {returnMsg}", LogHelper.LogType.Information);
                 return string.Join(",", returnMsg);
             }
             catch (Exception ex)
             {
+                LogHelper.Log.LogInfo(ex, LogHelper.LogType.Exception);
                 return ex.Message;
             }
         }
