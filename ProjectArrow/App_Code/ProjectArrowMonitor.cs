@@ -15,7 +15,7 @@ namespace ProjectArrow.App_Code
     public class ProjectArrowMonitor
     {
         private static JakwareUaClient uaClient = null;
-        private static ProductLineEntity[] productionLine;
+        private static readonly ProductLineEntity[] productionLine;
 
         static ProjectArrowMonitor()
         {
@@ -82,7 +82,7 @@ namespace ProjectArrow.App_Code
                             .First();
                             new TaskHelper().AddProjectArrow(new MES_ProjectArrow
                             {
-                                ORDERNUMBER = $"{item.Value.Value.ToString()}-{DateTime.Now:yyMMddHHmm}",
+                                ORDERNUMBER = $"{item.Value.Value}-{DateTime.Now:yyMMddHHmm}",
                                 SERIAL_ID = taskGuid,
                                 ASSEMBLYLINE = line.ProductLine,
                                 STATION = line.ProductLine,

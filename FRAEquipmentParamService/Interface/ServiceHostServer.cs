@@ -1,4 +1,5 @@
-﻿using FRAEquipmentParamService.Model;
+﻿using FRAEquipmentParamService.Implement;
+using FRAEquipmentParamService.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

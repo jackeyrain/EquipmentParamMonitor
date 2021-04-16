@@ -19,7 +19,8 @@ namespace FRAEquipmentParamService
     {
         // 任务集合
         public static List<IStation> stationMonitors = new List<IStation>();
-        static List<StationEntity> stationEntity = new List<StationEntity>();
+        private static List<StationEntity> stationEntity = new List<StationEntity>();
+        public static StationRepairMonitor stationRepairMonitor = new StationRepairMonitor();
 
         static void Main(string[] args)
         {

@@ -147,11 +147,14 @@
     <Compile Include="Implement\StationDataConvert.cs" />
     <Compile Include="Implement\StationLoadMonitor.cs" />
     <Compile Include="Implement\StationMonitor.cs" />
+    <Compile Include="Implement\StationRepairMonitor.cs" />
     <Compile Include="Interface\GuidLine.cs" />
     <Compile Include="Interface\IGuidLine.cs" />
     <Compile Include="Interface\ServiceHostServer.cs" />
     <Compile Include="LogHelper.cs" />
     <Compile Include="Model\DB\FRAEQUIPPARAMLOG.cs" />
+    <Compile Include="Model\DB\TM_BAS_EQUIPMENT.cs" />
+    <Compile Include="Model\DB\TM_BAS_EQUIPMENT_VARIABLE.cs" />
     <Compile Include="Model\DB\TP_FRA_Pallet.cs" />
     <Compile Include="Model\DB\TR_CIM_TOBE_REPAIRED.cs" />
     <Compile Include="Model\DB\TT_APS_WORK_ORDER.cs" />

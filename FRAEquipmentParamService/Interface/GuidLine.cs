@@ -87,6 +87,17 @@ namespace FRAEquipmentParamService.Interface
                     returnMsg.Add(_position);
                 }
                 LogHelper.Log.LogInfo($"{order_code} - {returnMsg}", LogHelper.LogType.Information);
+
+                // 开启返修工位加工记录
+                var workOrderInfo = DBAccess.Instance.Select<MES_TT_APS_WORK_ORDER>().Where(o => o.ORDER_CODE.Equals(order_code)).First();
+                if (workOrderInfo != null)
+                    Program.stationRepairMonitor.StartRecord(new WorkOrderInfo
+                    {
+                        WorkOrder = workOrderInfo.ORDER_CODE,
+                        Sequence = workOrderInfo.ORDER_SEQ.Value.ToString(),
+                        Vin = workOrderInfo.VIN_CODE
+                    });
+
                 return string.Join(",", returnMsg);
             }
             catch (Exception ex)
